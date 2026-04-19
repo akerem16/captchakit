@@ -29,7 +29,7 @@ ENV/
 
 # uv
 .uv/
-uv.lock
+# Note: uv.lock IS committed — it pins dev deps for reproducible CI builds.
 
 # Testing / coverage
 .tox/
