@@ -1,0 +1,138 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pycaptcha"
+version = "0.1.0"
+description = "Async-first, fully type-hinted, minimal captcha library with adapters for aiogram, FastAPI and Discord."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "akerem16", email = "akerembegic16@gmail.com" }]
+keywords = ["captcha", "async", "asyncio", "aiogram", "fastapi", "discord", "bot", "verification"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: AsyncIO",
+    "Framework :: FastAPI",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Security",
+    "Typing :: Typed",
+]
+dependencies = [
+    "Pillow>=10.0,<13",
+]
+
+[project.optional-dependencies]
+fastapi = ["fastapi>=0.110", "python-multipart>=0.0.9"]
+aiogram = ["aiogram>=3.4"]
+discord = ["discord.py>=2.3"]
+redis = ["redis>=5.0"]
+dev = [
+    "ruff>=0.5",
+    "mypy>=1.10",
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "pytest-cov>=5.0",
+    "hypothesis>=6.100",
+    "httpx>=0.27",
+    "fastapi>=0.110",
+    "python-multipart>=0.0.9",
+    "uvicorn[standard]>=0.30",
+]
+docs = [
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.25",
+]
+
+[project.urls]
+Homepage = "https://github.com/akerem16/pycaptcha"
+Repository = "https://github.com/akerem16/pycaptcha"
+Issues = "https://github.com/akerem16/pycaptcha/issues"
+Changelog = "https://github.com/akerem16/pycaptcha/blob/main/CHANGELOG.md"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pycaptcha"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/pycaptcha",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "ROADMAP.md",
+    "pyproject.toml",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W", "F", "I", "B", "C4", "UP", "N", "SIM", "RUF",
+    "ANN", "ASYNC", "S", "PT", "RET", "ARG", "PTH", "TCH", "PL",
+]
+ignore = [
+    "ANN401",   # typing.Any — Protocol yüzeylerinde kaçınılmaz
+    "PLR0913",  # çok argümanlı init'ler — CaptchaManager
+    "S311",     # random — decoratif amaçlı; solution secrets ile
+    "N818",     # public exception isimleri "Error" suffix olmadan (tercih)
+    "TC001",    # from __future__ import annotations zaten lazy eval ediyor
+    "TC002",
+    "TC003",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "ANN", "PLR2004", "ARG", "PT011", "PT018"]
+"examples/**" = ["ANN", "S", "T20"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["pycaptcha"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_unreachable = true
+pretty = true
+show_error_codes = true
+files = ["src", "tests"]
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_decorators = false
+disable_error_code = ["no-untyped-def"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-ra --strict-markers --strict-config"
+testpaths = ["tests"]
+asyncio_mode = "auto"
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+branch = true
+source = ["pycaptcha"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+    "\\.\\.\\.",
+]
