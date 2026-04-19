@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pycaptcha import Challenge, MemoryStorage
+from captchakit import Challenge, MemoryStorage
 
 from .conftest import FakeClock
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 import secrets
 from dataclasses import dataclass
 
-from pycaptcha.challenges.base import ChallengeSpec
+from captchakit.challenges.base import ChallengeSpec
 
 DEFAULT_CHARSET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 

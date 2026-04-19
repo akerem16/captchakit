@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Protocol, runtime_checkable
 
-from pycaptcha.challenges.base import Challenge
+from captchakit.challenges.base import Challenge
 
 
 @runtime_checkable

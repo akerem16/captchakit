@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ImageRenderer` (Pillow, `asyncio.to_thread` offload, PNG output).
 - `MemoryStorage` with attempt tracking and `cleanup_expired()`.
 - FastAPI adapter: `captcha_router()` + `verify_captcha` dependency.
-- Rich exception hierarchy (`PyCaptchaError` → `ChallengeError` →
+- Rich exception hierarchy (`CaptchaKitError` → `ChallengeError` →
   `ChallengeNotFound` / `ChallengeExpired` / `TooManyAttempts`).
 - Full type hints (`py.typed`), mypy `--strict` clean.
 - Constant-time answer comparison via `hmac.compare_digest`.

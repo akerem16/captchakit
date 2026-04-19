@@ -1,12 +1,12 @@
 """FastAPI adapter.
 
-Install with ``pip install "pycaptcha[fastapi]"``.
+Install with ``pip install "captchakit[fastapi]"``.
 
 Usage::
 
     from fastapi import FastAPI
-    from pycaptcha import CaptchaManager, TextChallengeFactory, ImageRenderer, MemoryStorage
-    from pycaptcha.adapters.fastapi import captcha_router, verify_captcha
+    from captchakit import CaptchaManager, TextChallengeFactory, ImageRenderer, MemoryStorage
+    from captchakit.adapters.fastapi import captcha_router, verify_captcha
 
     manager = CaptchaManager(
         factory=TextChallengeFactory(),
@@ -30,10 +30,10 @@ try:
     from fastapi import APIRouter, Depends, Form, HTTPException, Response, status
 except ImportError as exc:  # pragma: no cover
     raise ImportError(
-        "FastAPI adapter requires the `fastapi` extra: pip install 'pycaptcha[fastapi]'"
+        "FastAPI adapter requires the `fastapi` extra: pip install 'captchakit[fastapi]'"
     ) from exc
 
-from pycaptcha.errors import (
+from captchakit.errors import (
     ChallengeExpired,
     ChallengeNotFound,
     TooManyAttempts,
@@ -42,7 +42,7 @@ from pycaptcha.errors import (
 if TYPE_CHECKING:
     from collections.abc import Callable, Coroutine
 
-    from pycaptcha.manager import CaptchaManager
+    from captchakit.manager import CaptchaManager
 
 
 def captcha_router(

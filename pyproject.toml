@@ -3,13 +3,13 @@ requires = ["hatchling>=1.24"]
 build-backend = "hatchling.build"
 
 [project]
-name = "pycaptcha"
+name = "captchakit"
 version = "0.1.0"
 description = "Async-first, fully type-hinted, minimal captcha library with adapters for aiogram, FastAPI and Discord."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-authors = [{ name = "akerem16", email = "akerembegic16@gmail.com" }]
+authors = [{ name = "akerem16", email = "pypi@kerempy.com.tr" }]
 keywords = ["captcha", "async", "asyncio", "aiogram", "fastapi", "discord", "bot", "verification"]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -55,17 +55,17 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/akerem16/pycaptcha"
-Repository = "https://github.com/akerem16/pycaptcha"
-Issues = "https://github.com/akerem16/pycaptcha/issues"
-Changelog = "https://github.com/akerem16/pycaptcha/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/akerem16/captchakit"
+Repository = "https://github.com/akerem16/captchakit"
+Issues = "https://github.com/akerem16/captchakit/issues"
+Changelog = "https://github.com/akerem16/captchakit/blob/main/CHANGELOG.md"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/pycaptcha"]
+packages = ["src/captchakit"]
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "src/pycaptcha",
+    "src/captchakit",
     "README.md",
     "LICENSE",
     "CHANGELOG.md",
@@ -98,7 +98,7 @@ ignore = [
 "examples/**" = ["ANN", "S", "T20"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["pycaptcha"]
+known-first-party = ["captchakit"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -125,7 +125,7 @@ filterwarnings = ["error"]
 
 [tool.coverage.run]
 branch = true
-source = ["pycaptcha"]
+source = ["captchakit"]
 
 [tool.coverage.report]
 show_missing = true

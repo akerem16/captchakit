@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 import pytest
 
-from pycaptcha import (
+from captchakit import (
     CaptchaManager,
     ImageRenderer,
     MathChallengeFactory,

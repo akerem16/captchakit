@@ -1,30 +1,31 @@
-"""pycaptcha — async-first, typed captcha library."""
+"""captchakit — async-first, typed captcha library."""
 
 from __future__ import annotations
 
-from pycaptcha._clock import Clock, MonotonicClock
-from pycaptcha.challenges import (
+from captchakit._clock import Clock, MonotonicClock
+from captchakit.challenges import (
     Challenge,
     ChallengeFactory,
     ChallengeSpec,
     MathChallengeFactory,
     TextChallengeFactory,
 )
-from pycaptcha.errors import (
+from captchakit.errors import (
+    CaptchaKitError,
     ChallengeError,
     ChallengeExpired,
     ChallengeNotFound,
-    PyCaptchaError,
     StorageError,
     TooManyAttempts,
 )
-from pycaptcha.manager import CaptchaManager
-from pycaptcha.renderers import ImageRenderer, Renderer
-from pycaptcha.storage import MemoryStorage, Storage
+from captchakit.manager import CaptchaManager
+from captchakit.renderers import ImageRenderer, Renderer
+from captchakit.storage import MemoryStorage, Storage
 
 __version__ = "0.1.0"
 
 __all__ = [
+    "CaptchaKitError",
     "CaptchaManager",
     "Challenge",
     "ChallengeError",
@@ -37,7 +38,6 @@ __all__ = [
     "MathChallengeFactory",
     "MemoryStorage",
     "MonotonicClock",
-    "PyCaptchaError",
     "Renderer",
     "Storage",
     "StorageError",

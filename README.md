@@ -1,11 +1,11 @@
-# pycaptcha
+# captchakit
 
 > **Async-first, fully type-hinted captcha library for Python 3.10+.**
 > Zero runtime deps beyond Pillow. Drop-in adapters for FastAPI, aiogram and discord.py.
 
-[![PyPI](https://img.shields.io/pypi/v/pycaptcha.svg)](https://pypi.org/project/pycaptcha/)
-[![Python](https://img.shields.io/pypi/pyversions/pycaptcha.svg)](https://pypi.org/project/pycaptcha/)
-[![CI](https://github.com/akerem16/pycaptcha/actions/workflows/ci.yml/badge.svg)](https://github.com/akerem16/pycaptcha/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/captchakit.svg)](https://pypi.org/project/captchakit/)
+[![Python](https://img.shields.io/pypi/pyversions/captchakit.svg)](https://pypi.org/project/captchakit/)
+[![CI](https://github.com/akerem16/captchakit/actions/workflows/ci.yml/badge.svg)](https://github.com/akerem16/captchakit/actions/workflows/ci.yml)
 [![mypy: strict](https://img.shields.io/badge/mypy-strict-blue.svg)](http://mypy-lang.org/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -14,23 +14,23 @@
 
 ## Why another one?
 
-| | `lepture/captcha` | `claptcha` | `multicolorcaptcha` | **pycaptcha** |
-|---|---|---|---|---|
-| Async API | ❌ | ❌ | ❌ | ✅ |
-| `py.typed` + mypy strict | ⚠️ | ❌ | ❌ | ✅ |
-| TTL & attempt tracking | ❌ | ❌ | ❌ | ✅ built-in |
-| Pluggable storage | ❌ | ❌ | ❌ | ✅ `Protocol` |
-| Framework adapters | ❌ | ❌ | ❌ | ✅ FastAPI · aiogram · discord.py |
-| Runtime deps (core) | 0 (+Pillow) | +Pillow | +Pillow | +Pillow |
+| Feature                  | `lepture/captcha` | `claptcha` | `multicolorcaptcha` | **captchakit**                    |
+| ------------------------ | ----------------- | ---------- | ------------------- | --------------------------------- |
+| Async API                | ❌                 | ❌          | ❌                   | ✅                                 |
+| `py.typed` + mypy strict | ⚠️                | ❌          | ❌                   | ✅                                 |
+| TTL & attempt tracking   | ❌                 | ❌          | ❌                   | ✅ built-in                        |
+| Pluggable storage        | ❌                 | ❌          | ❌                   | ✅ `Protocol`                      |
+| Framework adapters       | ❌                 | ❌          | ❌                   | ✅ FastAPI · aiogram · discord.py |
+| Runtime deps (core)      | +Pillow           | +Pillow    | +Pillow             | +Pillow                           |
 
 ## Install
 
 ```bash
-pip install pycaptcha                  # core
-pip install "pycaptcha[fastapi]"       # + FastAPI adapter
-pip install "pycaptcha[aiogram]"       # + aiogram adapter (coming in 0.2)
-pip install "pycaptcha[discord]"       # + discord.py adapter (coming in 0.3)
-pip install "pycaptcha[redis]"         # + Redis storage backend (coming in 0.2)
+pip install captchakit                  # core
+pip install "captchakit[fastapi]"       # + FastAPI adapter
+pip install "captchakit[aiogram]"       # + aiogram adapter (coming in 0.2)
+pip install "captchakit[discord]"       # + discord.py adapter (coming in 0.3)
+pip install "captchakit[redis]"         # + Redis storage backend (coming in 0.2)
 ```
 
 > Adapters other than FastAPI are declared in the roadmap but not shipped in
@@ -41,7 +41,7 @@ pip install "pycaptcha[redis]"         # + Redis storage backend (coming in 0.2)
 
 ```python
 import asyncio
-from pycaptcha import (
+from captchakit import (
     CaptchaManager, ImageRenderer, MemoryStorage, TextChallengeFactory,
 )
 
@@ -65,8 +65,8 @@ asyncio.run(main())
 
 ```python
 from fastapi import Depends, FastAPI
-from pycaptcha import CaptchaManager, ImageRenderer, MathChallengeFactory, MemoryStorage
-from pycaptcha.adapters.fastapi import captcha_router, verify_captcha
+from captchakit import CaptchaManager, ImageRenderer, MathChallengeFactory, MemoryStorage
+from captchakit.adapters.fastapi import captcha_router, verify_captcha
 
 manager = CaptchaManager(MathChallengeFactory(), ImageRenderer(), MemoryStorage())
 app = FastAPI()
@@ -107,12 +107,12 @@ uv run python -m uvicorn examples.fastapi_login:app --reload
 
 ## Security scope
 
-**pycaptcha is a lightweight human-check**, not a bot-farm-grade security layer.
+**captchakit is a lightweight human-check**, not a bot-farm-grade security layer.
 It is aimed at Telegram/Discord verification, simple FastAPI registration flows
 and similar use cases where you just want to raise the cost for casual spam.
 
 For high-value forms (login, payment) use **hCaptcha**, **Cloudflare Turnstile**
-or **reCAPTCHA Enterprise** in addition. Combine pycaptcha with proper rate
+or **reCAPTCHA Enterprise** in addition. Combine captchakit with proper rate
 limiting at the edge of your application.
 
 ## Roadmap
@@ -132,8 +132,8 @@ See [ROADMAP.md](ROADMAP.md) for the full development plan.
 Contributions welcome. Local development:
 
 ```bash
-git clone https://github.com/akerem16/pycaptcha
-cd pycaptcha
+git clone https://github.com/akerem16/captchakit
+cd captchakit
 uv sync --all-extras
 uv run ruff check .
 uv run mypy

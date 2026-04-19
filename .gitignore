@@ -66,5 +66,5 @@ site/
 # Project-local artifacts
 *.png
 *.wav
-!src/pycaptcha/renderers/fonts/*.ttf
+!src/captchakit/renderers/fonts/*.ttf
 !tests/fixtures/*.png

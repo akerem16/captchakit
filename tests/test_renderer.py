@@ -4,7 +4,7 @@ from io import BytesIO
 
 from PIL import Image
 
-from pycaptcha import Challenge, ImageRenderer
+from captchakit import Challenge, ImageRenderer
 
 
 def _ch(text: str) -> Challenge:

@@ -5,11 +5,11 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from uuid import uuid4
 
-from pycaptcha._clock import Clock, MonotonicClock
-from pycaptcha.challenges.base import Challenge, ChallengeFactory
-from pycaptcha.errors import ChallengeExpired, ChallengeNotFound, TooManyAttempts
-from pycaptcha.renderers.base import Renderer
-from pycaptcha.storage.base import Storage
+from captchakit._clock import Clock, MonotonicClock
+from captchakit.challenges.base import Challenge, ChallengeFactory
+from captchakit.errors import ChallengeExpired, ChallengeNotFound, TooManyAttempts
+from captchakit.renderers.base import Renderer
+from captchakit.storage.base import Storage
 
 
 @dataclass(slots=True)

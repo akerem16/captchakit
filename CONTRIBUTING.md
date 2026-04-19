@@ -1,4 +1,4 @@
-# Contributing to pycaptcha
+# Contributing to captchakit
 
 Thanks for your interest! Contributions of all kinds are welcome — bug reports,
 feature requests, documentation fixes, new challenge types, new storage
@@ -7,8 +7,8 @@ backends, new framework adapters.
 ## Quick start
 
 ```bash
-git clone https://github.com/akerem16/pycaptcha
-cd pycaptcha
+git clone https://github.com/akerem16/captchakit
+cd captchakit
 uv sync --all-extras
 ```
 
@@ -24,7 +24,7 @@ uv run ruff check .          # lint
 uv run ruff format .         # auto-format
 uv run mypy                  # strict type-check
 uv run pytest                # run the test suite
-uv run pytest --cov=pycaptcha --cov-report=term-missing
+uv run pytest --cov=captchakit --cov-report=term-missing
 ```
 
 A pull request is merge-ready when all four pass and coverage stays ≥ 90%.
@@ -36,14 +36,14 @@ This library stays deliberately small. Before opening a large PR, please open
 an issue first so we can agree on the direction. "Small" means:
 - Core has **zero runtime deps beyond Pillow** — anything else is an extra.
 - Every public API is async and fully type-hinted.
-- Every public symbol is re-exported from `pycaptcha` and listed in `__all__`.
+- Every public symbol is re-exported from `captchakit` and listed in `__all__`.
 
 ### Adding a challenge type
 1. Subclass the `ChallengeFactory` protocol (see `challenges/text.py`).
 2. Return a `ChallengeSpec(prompt, solution, case_sensitive=...)`.
 3. Add tests covering happy path + validation errors.
-4. Re-export from `pycaptcha/challenges/__init__.py` and the top-level
-   `pycaptcha/__init__.py`.
+4. Re-export from `captchakit/challenges/__init__.py` and the top-level
+   `captchakit/__init__.py`.
 
 ### Adding a storage backend
 1. Implement the `Storage` protocol (`storage/base.py`).
@@ -53,7 +53,7 @@ an issue first so we can agree on the direction. "Small" means:
 4. Mirror `MemoryStorage`'s test coverage.
 
 ### Adding a framework adapter
-1. Create `src/pycaptcha/adapters/<framework>.py`.
+1. Create `src/captchakit/adapters/<framework>.py`.
 2. Guard the framework import with a friendly error pointing at the extra.
 3. Keep the adapter a **thin** translation layer — business logic stays in
    `CaptchaManager`.

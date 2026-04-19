@@ -6,7 +6,7 @@ import secrets
 from dataclasses import dataclass, field
 from typing import Literal
 
-from pycaptcha.challenges.base import ChallengeSpec
+from captchakit.challenges.base import ChallengeSpec
 
 Operator = Literal["+", "-", "*"]
 

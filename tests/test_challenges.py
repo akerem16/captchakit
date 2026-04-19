@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import pytest
 
-from pycaptcha import (
+from captchakit import (
     Challenge,
     ChallengeSpec,
     MathChallengeFactory,
     TextChallengeFactory,
 )
-from pycaptcha.challenges.text import DEFAULT_CHARSET
+from captchakit.challenges.text import DEFAULT_CHARSET
 
 
 def _make(solution: str, *, case_sensitive: bool = False) -> Challenge:

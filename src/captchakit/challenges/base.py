@@ -11,7 +11,7 @@ from typing import Protocol, runtime_checkable
 class ChallengeSpec:
     """A challenge's raw content before an id/TTL is attached.
 
-    Produced by a :class:`ChallengeFactory`; the :class:`~pycaptcha.CaptchaManager`
+    Produced by a :class:`ChallengeFactory`; the :class:`~captchakit.CaptchaManager`
     wraps it into a :class:`Challenge` with identifier and timestamps.
     """
 

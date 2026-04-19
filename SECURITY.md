@@ -12,8 +12,8 @@ most recent minor release only.
 
 ## Reporting a vulnerability
 
-If you believe you've found a security issue in pycaptcha, please **do not**
-open a public GitHub issue. Instead, email **akerembegic16@gmail.com** with:
+If you believe you've found a security issue in captchakit, please **do not**
+open a public GitHub issue. Instead, email **pypi@kerempy.com.tr** with:
 
 - a short description of the issue,
 - steps to reproduce (or a proof-of-concept), and
@@ -23,9 +23,9 @@ You'll get an acknowledgement within 72 hours. If the issue is confirmed I'll
 work with you on a fix and a coordinated disclosure timeline (typically 30
 days from confirmation).
 
-## Threat model — what pycaptcha is and isn't
+## Threat model — what captchakit is and isn't
 
-pycaptcha is a **lightweight human-check** intended to raise the cost of
+captchakit is a **lightweight human-check** intended to raise the cost of
 casual / scripted spam in use cases such as:
 
 - Telegram / Discord join-verification
@@ -35,7 +35,7 @@ casual / scripted spam in use cases such as:
 It is **not** a defence against a determined attacker using modern OCR or a
 human-solver farm. For high-value surfaces (login, payment, password reset)
 use a purpose-built service such as **hCaptcha**, **Cloudflare Turnstile**,
-or **reCAPTCHA Enterprise**, ideally in addition to pycaptcha.
+or **reCAPTCHA Enterprise**, ideally in addition to captchakit.
 
 ### What the library does guarantee
 

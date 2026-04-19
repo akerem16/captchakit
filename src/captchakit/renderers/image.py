@@ -17,7 +17,7 @@ from typing import TYPE_CHECKING
 from PIL import Image, ImageDraw, ImageFont
 
 if TYPE_CHECKING:
-    from pycaptcha.challenges.base import Challenge
+    from captchakit.challenges.base import Challenge
 
 RGB = tuple[int, int, int]
 

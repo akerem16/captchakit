@@ -1,4 +1,4 @@
-"""Minimal FastAPI example — protect a form with pycaptcha.
+"""Minimal FastAPI example — protect a form with captchakit.
 
 Run::
 
@@ -16,13 +16,13 @@ from __future__ import annotations
 from fastapi import Depends, FastAPI
 from fastapi.responses import HTMLResponse
 
-from pycaptcha import (
+from captchakit import (
     CaptchaManager,
     ImageRenderer,
     MathChallengeFactory,
     MemoryStorage,
 )
-from pycaptcha.adapters.fastapi import captcha_router, verify_captcha
+from captchakit.adapters.fastapi import captcha_router, verify_captcha
 
 manager = CaptchaManager(
     factory=MathChallengeFactory(),
@@ -31,14 +31,14 @@ manager = CaptchaManager(
     ttl=120.0,
 )
 
-app = FastAPI(title="pycaptcha demo")
+app = FastAPI(title="captchakit demo")
 app.include_router(captcha_router(manager, prefix="/captcha"))
 
 
 HTML = """
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><title>pycaptcha demo</title></head>
+<head><meta charset="utf-8"><title>captchakit demo</title></head>
 <body style="font-family: sans-serif; max-width: 420px; margin: 40px auto;">
 <h1>Prove you're human</h1>
 <form id="f">

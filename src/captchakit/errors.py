@@ -1,13 +1,13 @@
-"""Exception hierarchy for pycaptcha."""
+"""Exception hierarchy for captchakit."""
 
 from __future__ import annotations
 
 
-class PyCaptchaError(Exception):
-    """Base class for all pycaptcha exceptions."""
+class CaptchaKitError(Exception):
+    """Base class for all captchakit exceptions."""
 
 
-class ChallengeError(PyCaptchaError):
+class ChallengeError(CaptchaKitError):
     """Base for errors that reference a specific challenge id.
 
     Catch this to handle :class:`ChallengeNotFound`, :class:`ChallengeExpired`
@@ -39,5 +39,5 @@ class TooManyAttempts(ChallengeError):
     _template = "too many attempts for challenge: {id!r}"
 
 
-class StorageError(PyCaptchaError):
+class StorageError(CaptchaKitError):
     """Underlying storage backend failed."""

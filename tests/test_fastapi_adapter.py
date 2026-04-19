@@ -8,13 +8,13 @@ pytest.importorskip("httpx")
 from fastapi import Depends, FastAPI
 from httpx import ASGITransport, AsyncClient
 
-from pycaptcha import (
+from captchakit import (
     CaptchaManager,
     ImageRenderer,
     MemoryStorage,
     TextChallengeFactory,
 )
-from pycaptcha.adapters.fastapi import captcha_router, verify_captcha
+from captchakit.adapters.fastapi import captcha_router, verify_captcha
 
 
 def _make_app() -> tuple[FastAPI, CaptchaManager]:

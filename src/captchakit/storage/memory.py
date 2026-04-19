@@ -5,8 +5,8 @@ from __future__ import annotations
 import asyncio
 from dataclasses import dataclass, field
 
-from pycaptcha._clock import Clock, MonotonicClock
-from pycaptcha.challenges.base import Challenge
+from captchakit._clock import Clock, MonotonicClock
+from captchakit.challenges.base import Challenge
 
 
 @dataclass(slots=True)
@@ -15,7 +15,7 @@ class MemoryStorage:
 
     Suitable for single-process deployments and tests. For multi-process
     setups (e.g. gunicorn with multiple workers) use a shared backend such as
-    :class:`~pycaptcha.storage.redis.RedisStorage` (optional extra).
+    :class:`~captchakit.storage.redis.RedisStorage` (optional extra).
     """
 
     clock: Clock = field(default_factory=MonotonicClock)

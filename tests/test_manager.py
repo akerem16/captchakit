@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from pycaptcha import (
+from captchakit import (
     CaptchaManager,
     ChallengeExpired,
     ChallengeNotFound,

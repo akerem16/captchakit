@@ -1,4 +1,4 @@
-# pycaptcha — Geliştirme Yol Haritası
+# captchakit — Geliştirme Yol Haritası
 
 > Async-first, fully type-hinted, Pillow dışında runtime bağımlılığı olmayan, aiogram / FastAPI / Discord için hazır adapter'lı minimal captcha kütüphanesi.
 
@@ -13,7 +13,7 @@
 ### 1.1 Problem
 Python ekosisteminde captcha üreten kütüphaneler mevcut (lepture/captcha, claptcha, multicolorcaptcha, easy-captcha), fakat hepsinde şu boşluklar var:
 
-| Eksik | Mevcut kütüphaneler | pycaptcha'nın tutumu |
+| Eksik | Mevcut kütüphaneler | captchakit'nın tutumu |
 |---|---|---|
 | Async API | yok (hepsi sync) | `async def generate(...)`, thread-pool'a offload |
 | `py.typed` + tam type hint | kısmi / yok | PEP 561 uyumlu, mypy strict'te geçer |
@@ -74,7 +74,7 @@ Python ekosisteminde captcha üreten kütüphaneler mevcut (lepture/captcha, cla
 ## 4. Repo & Paket Yapısı
 
 ```
-pycaptcha/
+captchakit/
 ├── pyproject.toml
 ├── README.md                 # hook + quickstart + badges
 ├── ROADMAP.md                # (bu dosya)
@@ -86,7 +86,7 @@ pycaptcha/
 │   ├── ISSUE_TEMPLATE/
 │   └── dependabot.yml
 ├── src/
-│   └── pycaptcha/
+│   └── captchakit/
 │       ├── __init__.py       # public API re-exports
 │       ├── py.typed          # PEP 561 işaretçisi
 │       ├── types.py          # TypedDict, Protocol, TypeAlias
@@ -131,9 +131,9 @@ pycaptcha/
 ```
 
 ### 4.1 İsim kararı
-- Dizin: `pycaptcha/` (GitHub repo adı da aynı).
-- **Import adı da `pycaptcha`** (kullanıcı net şekilde aradığı için kısa olan tercih edildi).
-- **PyPI'de `pycaptcha` müsaitliği kontrol edilmeli** (0.1 yayın öncesi). Alınmışsa alternatif: `aiocaptcha` veya `pycaptcha-async`.
+- Dizin: `captchakit/` (GitHub repo adı da aynı).
+- **Import adı da `captchakit`** (kullanıcı net şekilde aradığı için kısa olan tercih edildi).
+- **PyPI'de `captchakit` müsaitliği kontrol edilmeli** (0.1 yayın öncesi). Alınmışsa alternatif: `captchakit` veya `captchakit-async`.
 
 ---
 
@@ -161,12 +161,12 @@ pycaptcha/
 
 ### 5.3 Hataların hiyerarşisi
 ```python
-class PyCaptchaError(Exception): ...
-class ChallengeExpired(PyCaptchaError): ...
-class ChallengeNotFound(PyCaptchaError): ...
-class InvalidSolution(PyCaptchaError): ...
-class TooManyAttempts(PyCaptchaError): ...
-class StorageError(PyCaptchaError): ...
+class CaptchaKitError(Exception): ...
+class ChallengeExpired(CaptchaKitError): ...
+class ChallengeNotFound(CaptchaKitError): ...
+class InvalidSolution(CaptchaKitError): ...
+class TooManyAttempts(CaptchaKitError): ...
+class StorageError(CaptchaKitError): ...
 ```
 
 ---
@@ -233,13 +233,13 @@ class CaptchaManager:
 
 ### 6.4 Public import yüzeyi
 ```python
-# pycaptcha/__init__.py
+# captchakit/__init__.py
 from .manager import CaptchaManager
 from .challenges import TextChallenge, MathChallenge
 from .renderers import ImageRenderer
 from .storage import MemoryStorage
 from .errors import (
-    PyCaptchaError, ChallengeExpired, ChallengeNotFound,
+    CaptchaKitError, ChallengeExpired, ChallengeNotFound,
     InvalidSolution, TooManyAttempts,
 )
 __all__ = [...]
@@ -272,7 +272,7 @@ __version__ = "0.1.0"
 
 ### 9.1 aiogram v3
 ```python
-from pycaptcha.adapters.aiogram import CaptchaMiddleware
+from captchakit.adapters.aiogram import CaptchaMiddleware
 
 dp.chat_join_request.middleware(CaptchaMiddleware(manager=cm, ttl=120))
 ```
@@ -281,7 +281,7 @@ dp.chat_join_request.middleware(CaptchaMiddleware(manager=cm, ttl=120))
 
 ### 9.2 FastAPI
 ```python
-from pycaptcha.adapters.fastapi import captcha_router, get_captcha
+from captchakit.adapters.fastapi import captcha_router, get_captcha
 
 app.include_router(captcha_router(manager=cm, prefix="/captcha"))
 # GET  /captcha/new   -> {"id": "...", "image_url": "/captcha/{id}.png"}
@@ -294,7 +294,7 @@ async def register(_: None = Depends(get_captcha(cm))): ...
 
 ### 9.3 Discord (discord.py 2.x)
 ```python
-from pycaptcha.adapters.discord import VerificationCog
+from captchakit.adapters.discord import VerificationCog
 bot.add_cog(VerificationCog(manager=cm, role_on_success="Verified"))
 ```
 - `on_member_join` → DM ile captcha görseli gönder, cevap verene rol ata.
@@ -384,7 +384,7 @@ Sürüm kesmeden *önce* yapılacaklar:
 
 | Risk | Etki | Azaltma |
 |---|---|---|
-| PyPI'de `pycaptcha` alınmış olabilir | Orta | Yayın öncesi kontrol, yedek ad: `aiocaptcha` |
+| PyPI'de `captchakit` alınmış olabilir | Orta | Yayın öncesi kontrol, yedek ad: `captchakit` |
 | Font rendering platform farkları → pixel diff testleri flaky | Düşük | Bundled tek font (DejaVu Sans OFL), CI image'ı sabit |
 | Pillow ABI kırılmaları (her yıl) | Orta | CI'de Pillow son 2 major + güncel; `Pillow>=10,<12` pin |
 | Discord.py vs py-cord çatallanması | Orta | Extra adını `discord` yerine `discordpy` yap, py-cord için ayrı extra |
@@ -400,7 +400,7 @@ Sürüm kesmeden *önce* yapılacaklar:
 
 ## 16. İlk Hafta Mikro Plan (yarın başlarsan)
 
-**Gün 1:** `pyproject.toml`, `src/pycaptcha/__init__.py`, `py.typed`, `ruff + mypy + pytest` kurulum, CI iskeleti.
+**Gün 1:** `pyproject.toml`, `src/captchakit/__init__.py`, `py.typed`, `ruff + mypy + pytest` kurulum, CI iskeleti.
 **Gün 2:** `errors.py`, `types.py`, `challenges/base.py`, `TextChallenge`.
 **Gün 3:** `renderers/image.py` (Pillow) + `tests/test_renderers`.
 **Gün 4:** `storage/memory.py` + `manager.py` + uçtan uca test.
