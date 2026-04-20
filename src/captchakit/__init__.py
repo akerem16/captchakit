@@ -26,7 +26,7 @@ from captchakit.metrics import MetricsSink, NoOpMetrics
 from captchakit.renderers import AudioRenderer, ImageRenderer, Renderer, Theme
 from captchakit.storage import MemoryStorage, Storage
 
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 
 __all__ = [
     "AudioRenderer",

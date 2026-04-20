@@ -68,3 +68,6 @@ site/
 *.wav
 !src/captchakit/renderers/fonts/*.ttf
 !tests/fixtures/*.png
+
+# Claude Code local notes
+CLAUDE.md
