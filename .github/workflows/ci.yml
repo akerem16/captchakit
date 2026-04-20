@@ -49,7 +49,9 @@ jobs:
       - name: Bandit (source static analysis)
         run: uv run bandit -c pyproject.toml -r src -q
       - name: pip-audit (known CVEs in deps)
-        run: uv run pip-audit --strict
+        # --strict would fail because our own editable `captchakit` install
+        # cannot be audited against PyPI; we care about real deps.
+        run: uv run pip-audit --skip-editable
 
   test:
     runs-on: ${{ matrix.os }}
