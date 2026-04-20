@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-04-20
+
+Docs-only patch release — no code changes, no breaking changes.
+
+### Added
+- `README.md` "Showcase" gallery — PNG samples for all four
+  built-in `Theme` presets, an SVG sample, a math-challenge PNG and
+  a linkable audio (WAV) sample under `docs/assets/showcase/`.
+- `AGENTS.md` — context file for AI coding agents (Cursor, Windsurf,
+  Claude Code, aider, …) with deterministic copy-paste recipes for
+  every adapter/storage/rate-limiter/renderer combination, the full
+  public symbol index and a "don't do this" pitfall list.
+- `llms.txt` — [llmstxt.org](https://llmstxt.org)-compatible index
+  of the public API and canonical recipes, for retrieval-augmented
+  tooling.
+- `scripts/render_showcase.py` — reproducible script that regenerates
+  every showcase asset using the library's own public API.
+
+### Changed
+- `README.md`: new "For AI agents / LLM tooling" section pointing at
+  `llms.txt` and `AGENTS.md`; new `AI-friendly` badge.
+
 ## [1.0.0] - 2026-04-20
 
 First production-ready release. **No breaking changes from 0.5.0** —

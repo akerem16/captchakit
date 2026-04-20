@@ -66,8 +66,12 @@ site/
 # Project-local artifacts
 *.png
 *.wav
+*.svg
 !src/captchakit/renderers/fonts/*.ttf
 !tests/fixtures/*.png
+!docs/assets/**/*.png
+!docs/assets/**/*.wav
+!docs/assets/**/*.svg
 
 # Claude Code local notes
 CLAUDE.md

@@ -1,0 +1,85 @@
+# captchakit
+
+> Async-first, fully typed Python captcha library (Python 3.10+). Core runtime dep is only Pillow. Ships adapters for FastAPI, aiogram, discord.py and Django; storage backends for in-memory, Redis and PostgreSQL; rate limiting; Prometheus metrics; and i18n (en/tr/de/es). Challenge types: text, math, emoji grid, word. Renderers: PNG (Pillow), SVG (pure Python), WAV (stdlib `wave`, for accessibility). API is semver-stable under `1.x`.
+
+## Key facts for code generation
+
+- Package name: `captchakit`. Install: `pip install captchakit` for the core.
+- Every I/O method is `async def`. Always `await` `manager.issue()`, `manager.verify()`, `manager.discard()`, and all `Storage` / `Renderer` / `RateLimiter` methods.
+- `CaptchaManager.issue()` returns `tuple[str, bytes]` — the challenge id and the rendered bytes (PNG / SVG / WAV depending on the renderer).
+- `CaptchaManager.verify(challenge_id, user_input)` returns `bool`. It raises `ChallengeNotFound` / `ChallengeExpired` / `TooManyAttempts` for terminal states; a `False` return just means "wrong answer, more attempts remain".
+- Solution comparison is constant-time (`hmac.compare_digest`). Solutions are generated with the `secrets` module.
+- `MemoryStorage` is per-process only. Use `RedisStorage` or `PostgresStorage` when running more than one worker.
+- Case sensitivity follows `ChallengeSpec.case_sensitive`; most factories default to case-insensitive.
+
+## Core API
+
+- [Package overview & public re-exports](https://akerem16.github.io/captchakit/) — `CaptchaManager`, challenges, renderers, storage, rate limiters, metrics, i18n
+- [Quickstart](https://akerem16.github.io/captchakit/quickstart/) — 30-second end-to-end example
+- [API reference](https://akerem16.github.io/captchakit/api/) — every public symbol with signatures (mkdocstrings)
+- [Stability policy](https://akerem16.github.io/captchakit/stability/) — semver guarantees for the `1.x` line
+
+## Challenges
+
+- [Text](https://akerem16.github.io/captchakit/) — `TextChallengeFactory(length=5, charset=..., case_sensitive=False)`
+- [Math](https://akerem16.github.io/captchakit/) — `MathChallengeFactory(operators=("+","-","*"), min_operand=1, max_operand=9)`
+- [Emoji grid](https://akerem16.github.io/captchakit/) — `EmojiGridChallengeFactory(rows=3, cols=3, distractors=8)`
+- [Word](https://akerem16.github.io/captchakit/) — `WordChallengeFactory(wordlist=None)` (bundled EN list, or pass your own)
+
+## Renderers
+
+- [Image (PNG)](https://akerem16.github.io/captchakit/renderers/) — `ImageRenderer(theme=Theme.CLASSIC, width=220, height=70)`; content-type `image/png`
+- [SVG](https://akerem16.github.io/captchakit/renderers/) — `SVGRenderer()`; content-type `image/svg+xml`; ~10× smaller payload
+- [Audio (WAV)](https://akerem16.github.io/captchakit/audio/) — `AudioRenderer()`; content-type `audio/wav`; accessibility alternative
+- [Themes](https://akerem16.github.io/captchakit/themes/) — built-ins: `Theme.CLASSIC`, `Theme.DARK`, `Theme.PASTEL`, `Theme.HIGH_CONTRAST` (WCAG AA)
+
+## Storage
+
+- [In-memory](https://akerem16.github.io/captchakit/storage/) — `MemoryStorage()` — default, single-process only
+- [Redis](https://akerem16.github.io/captchakit/storage/) — `RedisStorage(client, prefix="captchakit")` — requires `pip install "captchakit[redis]"`
+- [PostgreSQL](https://akerem16.github.io/captchakit/storage/) — `PostgresStorage(pool)` — requires `pip install "captchakit[postgres]"`, call `await storage.init()` once
+
+## Rate limiting
+
+- [Token buckets](https://akerem16.github.io/captchakit/ratelimit/) — `NoOpRateLimiter` (default), `TokenBucketRateLimiter(capacity, refill_rate)`, `RedisTokenBucket(client, ...)` for multi-process safety
+
+## Framework adapters
+
+- [FastAPI](https://akerem16.github.io/captchakit/adapters/fastapi/) — `captcha_router(manager, prefix="/captcha")`, `verify_captcha(manager)` dependency
+- [aiogram](https://akerem16.github.io/captchakit/adapters/aiogram/) — `send_captcha(bot, chat_id, manager)` helper
+- [discord.py](https://akerem16.github.io/captchakit/adapters/discord/) — `send_captcha(channel, manager)` helper
+- [Django](https://akerem16.github.io/captchakit/adapters/django/) — `CaptchaField`, `CaptchaWidget`, `captcha_image_view`
+
+## Errors
+
+`captchakit.errors` defines the full hierarchy: `CaptchaKitError` (root) → `ChallengeError` → {`ChallengeNotFound`, `ChallengeExpired`, `TooManyAttempts`} and siblings `StorageError`, `RateLimited`. Catch the specific subclass — don't catch bare `Exception`.
+
+## Canonical recipe
+
+```python
+# pip install "captchakit[fastapi]"
+from fastapi import Depends, FastAPI
+from captchakit import CaptchaManager, ImageRenderer, MathChallengeFactory, MemoryStorage
+from captchakit.adapters.fastapi import captcha_router, verify_captcha
+
+manager = CaptchaManager(
+    factory=MathChallengeFactory(),
+    renderer=ImageRenderer(),
+    storage=MemoryStorage(),
+    ttl=120.0,
+    max_attempts=3,
+)
+app = FastAPI()
+app.include_router(captcha_router(manager, prefix="/captcha"))
+
+@app.post("/signup")
+async def signup(_: None = Depends(verify_captcha(manager))) -> dict[str, bool]:
+    return {"ok": True}
+```
+
+## Optional
+
+- [AGENTS.md](https://github.com/akerem16/captchakit/blob/main/AGENTS.md) — deterministic task templates for coding agents (add captcha to a route, switch storage, add rate limiting, etc.)
+- [CHANGELOG.md](https://github.com/akerem16/captchakit/blob/main/CHANGELOG.md) — version history
+- [SECURITY.md](https://github.com/akerem16/captchakit/blob/main/SECURITY.md) — threat model and responsible disclosure
+- [Examples](https://github.com/akerem16/captchakit/tree/main/examples) — runnable demo apps

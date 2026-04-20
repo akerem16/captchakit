@@ -28,7 +28,7 @@ from captchakit.ratelimit import NoOpRateLimiter, RateLimiter, TokenBucketRateLi
 from captchakit.renderers import AudioRenderer, ImageRenderer, Renderer, SVGRenderer, Theme
 from captchakit.storage import MemoryStorage, Storage
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 __all__ = [
     "AudioRenderer",
