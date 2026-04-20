@@ -13,10 +13,10 @@
         <link rel="canonical" href="https://akerem16.github.io/captchakit/storage/">
       
       
-        <link rel="prev" href="../adapters/discord/">
+        <link rel="prev" href="../adapters/django/">
       
       
-        <link rel="next" href="../themes/">
+        <link rel="next" href="../renderers/">
       
       
         
@@ -304,6 +304,25 @@
   
   
     <li class="md-tabs__item">
+      <a href="../renderers/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Renderers
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../themes/" class="md-tabs__link">
         
   
@@ -349,6 +368,25 @@
     
   
   i18n
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../ratelimit/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Rate limiting
 
       </a>
     </li>
@@ -628,6 +666,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adapters/django/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Django
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -740,10 +806,48 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#postgresstorage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PostgresStorage
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../renderers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Renderers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -817,6 +921,33 @@
     
   
     i18n
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ratelimit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rate limiting
   
 
     
@@ -948,6 +1079,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#postgresstorage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PostgresStorage
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1012,6 +1154,23 @@ writing four async methods — no subclassing required.</p>
 <p>Until you install the extra, <code>from captchakit.storage import RedisStorage</code>
 defers the underlying <code>redis</code> import — so the absence of the package never
 breaks <code>from captchakit.storage import MemoryStorage</code>.</p>
+<h2 id="postgresstorage"><code>PostgresStorage</code><a class="headerlink" href="#postgresstorage" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">asyncpg</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">captchakit.storage</span><span class="w"> </span><span class="kn">import</span> <span class="n">PostgresStorage</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">pool</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncpg</span><span class="o">.</span><span class="n">create_pool</span><span class="p">(</span><span class="n">dsn</span><span class="o">=</span><span class="s2">&quot;postgres://…&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">storage</span> <span class="o">=</span> <span class="n">PostgresStorage</span><span class="p">(</span><span class="n">pool</span><span class="o">=</span><span class="n">pool</span><span class="p">)</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">create_schema</span><span class="p">()</span>  <span class="c1"># once at startup</span>
+</code></pre></div>
+<ul>
+<li>Single table (default name <code>captchakit_challenges</code>) with <code>challenge_id</code>
+  PK, <code>JSONB</code> payload, <code>attempts</code> counter and a <code>timestamptz</code>
+  <code>expires_at</code> column.</li>
+<li>Multi-process and multi-host safe.</li>
+<li>Postgres has no native per-row TTL; call <code>await storage.cleanup_expired()</code>
+  periodically (APScheduler / Celery beat / <code>asyncio.create_task</code>).</li>
+<li>Install with <code>pip install "captchakit[postgres]"</code>.</li>
+</ul>
 
 
 

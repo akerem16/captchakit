@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://akerem16.github.io/captchakit/adapters/discord/">
+        <link rel="canonical" href="https://akerem16.github.io/captchakit/adapters/django/">
       
       
-        <link rel="prev" href="../aiogram/">
+        <link rel="prev" href="../discord/">
       
       
-        <link rel="next" href="../django/">
+        <link rel="next" href="../../storage/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Discord - captchakit</title>
+        <title>Django - captchakit</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#discord-adapter" class="md-skip">
+        <a href="#django" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Discord
+              Django
             
           </span>
         </div>
@@ -647,6 +647,34 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../discord/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discord
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -666,7 +694,7 @@
   <span class="md-ellipsis">
     
   
-    Discord
+    Django
   
 
     
@@ -684,7 +712,7 @@
   <span class="md-ellipsis">
     
   
-    Discord
+    Django
   
 
     
@@ -710,10 +738,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#helper" class="md-nav__link">
+  <a href="#setup" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Helper
+        Setup
       
     </span>
   </a>
@@ -721,10 +749,43 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#end-to-end-on-join-dm-verification" class="md-nav__link">
+  <a href="#image-view" class="md-nav__link">
     <span class="md-ellipsis">
       
-        End-to-end: on-join DM verification
+        Image view
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#form-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Form field
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customising-the-image-url" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customising the image URL
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#async-views" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Async views
       
     </span>
   </a>
@@ -735,34 +796,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../django/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Django
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -1018,10 +1051,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#helper" class="md-nav__link">
+  <a href="#setup" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Helper
+        Setup
       
     </span>
   </a>
@@ -1029,10 +1062,43 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#end-to-end-on-join-dm-verification" class="md-nav__link">
+  <a href="#image-view" class="md-nav__link">
     <span class="md-ellipsis">
       
-        End-to-end: on-join DM verification
+        Image view
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#form-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Form field
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customising-the-image-url" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customising the image URL
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#async-views" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Async views
       
     </span>
   </a>
@@ -1059,52 +1125,66 @@
   
 
 
-<h1 id="discord-adapter">Discord adapter<a class="headerlink" href="#discord-adapter" title="Permanent link">&para;</a></h1>
-<p>Install: <code>pip install "captchakit[discord]"</code>.</p>
-<p>Thin helper — <code>send_captcha</code> — issues a challenge, uploads the PNG as a
-<code>discord.File</code> attachment, and returns the challenge id. Coordinating that
-id with the user's later reply is your bot's job (a plain dict keyed by
-<code>member.id</code> works fine; use Redis once you scale to multiple processes).</p>
-<h2 id="helper">Helper<a class="headerlink" href="#helper" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">captchakit.adapters.discord</span><span class="w"> </span><span class="kn">import</span> <span class="n">send_captcha</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">challenge_id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send_captcha</span><span class="p">(</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">channel</span><span class="p">,</span>               <span class="c1"># anything Messageable: DMChannel, TextChannel, Thread</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">manager</span><span class="p">,</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">content</span><span class="o">=</span><span class="s2">&quot;Prove you&#39;re human:&quot;</span><span class="p">,</span>  <span class="c1"># optional</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;captcha.png&quot;</span><span class="p">,</span>         <span class="c1"># optional</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="p">)</span>
+<h1 id="django">Django<a class="headerlink" href="#django" title="Permanent link">&para;</a></h1>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;captchakit[django]&quot;</span>
 </code></pre></div>
-<h2 id="end-to-end-on-join-dm-verification">End-to-end: on-join DM verification<a class="headerlink" href="#end-to-end-on-join-dm-verification" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">discord</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">discord.ext</span><span class="w"> </span><span class="kn">import</span> <span class="n">commands</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">captchakit</span><span class="w"> </span><span class="kn">import</span> <span class="n">CaptchaManager</span><span class="p">,</span> <span class="n">ImageRenderer</span><span class="p">,</span> <span class="n">MathChallengeFactory</span><span class="p">,</span> <span class="n">MemoryStorage</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">captchakit.adapters.discord</span><span class="w"> </span><span class="kn">import</span> <span class="n">send_captcha</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">intents</span> <span class="o">=</span> <span class="n">discord</span><span class="o">.</span><span class="n">Intents</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">intents</span><span class="o">.</span><span class="n">members</span> <span class="o">=</span> <span class="kc">True</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">intents</span><span class="o">.</span><span class="n">message_content</span> <span class="o">=</span> <span class="kc">True</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="n">bot</span> <span class="o">=</span> <span class="n">commands</span><span class="o">.</span><span class="n">Bot</span><span class="p">(</span><span class="n">command_prefix</span><span class="o">=</span><span class="s2">&quot;!&quot;</span><span class="p">,</span> <span class="n">intents</span><span class="o">=</span><span class="n">intents</span><span class="p">)</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="n">manager</span> <span class="o">=</span> <span class="n">CaptchaManager</span><span class="p">(</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="n">MathChallengeFactory</span><span class="p">(),</span> <span class="n">ImageRenderer</span><span class="p">(),</span> <span class="n">MemoryStorage</span><span class="p">(),</span>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="p">)</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="n">pending</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>
-<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="nd">@bot</span><span class="o">.</span><span class="n">event</span>
-<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_member_join</span><span class="p">(</span><span class="n">member</span><span class="p">:</span> <span class="n">discord</span><span class="o">.</span><span class="n">Member</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>    <span class="n">dm</span> <span class="o">=</span> <span class="k">await</span> <span class="n">member</span><span class="o">.</span><span class="n">create_dm</span><span class="p">()</span>
-<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>    <span class="n">pending</span><span class="p">[</span><span class="n">member</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send_captcha</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">manager</span><span class="p">)</span>
-<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>
-<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="nd">@bot</span><span class="o">.</span><span class="n">event</span>
-<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_message</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="n">discord</span><span class="o">.</span><span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>    <span class="n">cid</span> <span class="o">=</span> <span class="n">pending</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>    <span class="k">if</span> <span class="n">cid</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">msg</span><span class="o">.</span><span class="n">guild</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>        <span class="k">return</span>
-<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>    <span class="k">if</span> <span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">cid</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">content</span><span class="p">):</span>
-<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>        <span class="k">del</span> <span class="n">pending</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
-<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>        <span class="k">await</span> <span class="n">msg</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;Welcome!&quot;</span><span class="p">)</span>
+<p>Django is sync-first, so the adapter bridges <code>CaptchaManager</code>'s async API
+through <code>asgiref.sync.async_to_sync</code>.</p>
+<h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h2>
+<p>Keep a single module-level manager — reuse it across views and forms:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># app/captcha.py</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">captchakit</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">CaptchaManager</span><span class="p">,</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">ImageRenderer</span><span class="p">,</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">MemoryStorage</span><span class="p">,</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">TextChallengeFactory</span><span class="p">,</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="p">)</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="n">manager</span> <span class="o">=</span> <span class="n">CaptchaManager</span><span class="p">(</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="n">factory</span><span class="o">=</span><span class="n">TextChallengeFactory</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    <span class="n">renderer</span><span class="o">=</span><span class="n">ImageRenderer</span><span class="p">(),</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="n">storage</span><span class="o">=</span><span class="n">MemoryStorage</span><span class="p">(),</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="n">ttl</span><span class="o">=</span><span class="mf">180.0</span><span class="p">,</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="p">)</span>
 </code></pre></div>
+<blockquote>
+<p>Use <code>RedisStorage</code> or <code>PostgresStorage</code> if you run more than one
+worker — <code>MemoryStorage</code> can't share challenges across processes.</p>
+</blockquote>
+<h2 id="image-view">Image view<a class="headerlink" href="#image-view" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># urls.py</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">django.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">path</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">captchakit.adapters.django</span><span class="w"> </span><span class="kn">import</span> <span class="n">captcha_image_view</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">app.captcha</span><span class="w"> </span><span class="kn">import</span> <span class="n">manager</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;captcha/&lt;str:challenge_id&gt;.png&quot;</span><span class="p">,</span> <span class="n">captcha_image_view</span><span class="p">(</span><span class="n">manager</span><span class="p">)),</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="p">]</span>
+</code></pre></div>
+<h2 id="form-field">Form field<a class="headerlink" href="#form-field" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">django</span><span class="w"> </span><span class="kn">import</span> <span class="n">forms</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">captchakit.adapters.django</span><span class="w"> </span><span class="kn">import</span> <span class="n">CaptchaField</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">app.captcha</span><span class="w"> </span><span class="kn">import</span> <span class="n">manager</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="k">class</span><span class="w"> </span><span class="nc">RegisterForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="n">username</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="n">captcha</span> <span class="o">=</span> <span class="n">CaptchaField</span><span class="p">(</span><span class="n">manager</span><span class="o">=</span><span class="n">manager</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li>Issues a fresh challenge on unbound form construction.</li>
+<li><code>clean()</code> verifies the submitted answer; raises <code>ValidationError</code> on
+  wrong / expired / exhausted attempts.</li>
+<li>The widget produces <code>&lt;img&gt;</code> + hidden <code>captcha_id</code> + text input — render
+  with <code>{{ form.captcha }}</code>.</li>
+</ul>
+<h2 id="customising-the-image-url">Customising the image URL<a class="headerlink" href="#customising-the-image-url" title="Permanent link">&para;</a></h2>
+<p>If your URL pattern isn't <code>/captcha/&lt;id&gt;.png</code>, pass the template:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">CaptchaField</span><span class="p">(</span><span class="n">manager</span><span class="o">=</span><span class="n">manager</span><span class="p">,</span> <span class="n">image_url_pattern</span><span class="o">=</span><span class="s2">&quot;/auth/challenge/</span><span class="si">{id}</span><span class="s2">.png&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="async-views">Async views<a class="headerlink" href="#async-views" title="Permanent link">&para;</a></h2>
+<p>If your project already runs on ASGI, you can skip the sync bridge and
+call the manager directly from async views. The form field still works —
+<code>async_to_sync</code> is safe inside an ASGI loop.</p>
 
 
 

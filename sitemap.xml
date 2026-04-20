@@ -25,6 +25,14 @@
          <lastmod>2026-04-20</lastmod>
     </url>
     <url>
+         <loc>https://akerem16.github.io/captchakit/ratelimit/</loc>
+         <lastmod>2026-04-20</lastmod>
+    </url>
+    <url>
+         <loc>https://akerem16.github.io/captchakit/renderers/</loc>
+         <lastmod>2026-04-20</lastmod>
+    </url>
+    <url>
          <loc>https://akerem16.github.io/captchakit/storage/</loc>
          <lastmod>2026-04-20</lastmod>
     </url>
@@ -38,6 +46,10 @@
     </url>
     <url>
          <loc>https://akerem16.github.io/captchakit/adapters/discord/</loc>
+         <lastmod>2026-04-20</lastmod>
+    </url>
+    <url>
+         <loc>https://akerem16.github.io/captchakit/adapters/django/</loc>
          <lastmod>2026-04-20</lastmod>
     </url>
     <url>
