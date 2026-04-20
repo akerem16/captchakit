@@ -7,11 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Planned for 0.3
-- `discord.py` adapter (verification cog).
-- `AudioChallenge` (optional, requires extra).
-- `WordChallenge` (list-based accessibility challenge).
-- `mkdocs-material` site published to GitHub Pages.
+### Planned for 0.4
+- `AudioChallenge` (optional extra — accessibility alternative to images).
+- i18n hooks for challenge prompts.
+- Theming presets (color palettes, font bundles) for `ImageRenderer`.
+- Metrics callbacks (Prometheus-compatible counters for issue / verify).
+
+## [0.3.0] - 2026-04-20
+
+### Added
+- `discord.py` adapter: `captchakit.adapters.discord.send_captcha(channel, manager)`
+  helper (`pip install "captchakit[discord]"`). Mirrors the aiogram adapter —
+  thin, stateless, returns the challenge id for the caller to persist.
+- `WordChallengeFactory`: accessibility-oriented factory that picks a real
+  word from a bundled 50-word English list (or a user-supplied tuple).
+- `mkdocs-material` documentation site: quickstart, adapter guides, storage
+  guide, API reference via `mkdocstrings`. Deployed from `main` to
+  `gh-pages` through `.github/workflows/docs.yml`.
+
+### Changed
+- `ROADMAP.md` rewritten as a concise English overview; detailed
+  implementation plans were migrated into CHANGELOG / CONTRIBUTING /
+  docs where they belong.
 
 ## [0.2.0] - 2026-04-20
 

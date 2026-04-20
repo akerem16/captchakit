@@ -6,6 +6,7 @@ from captchakit.challenges.base import Challenge, ChallengeFactory, ChallengeSpe
 from captchakit.challenges.grid import EmojiGridChallengeFactory
 from captchakit.challenges.math import MathChallengeFactory
 from captchakit.challenges.text import TextChallengeFactory
+from captchakit.challenges.word import WordChallengeFactory
 
 __all__ = [
     "Challenge",
@@ -14,4 +15,5 @@ __all__ = [
     "EmojiGridChallengeFactory",
     "MathChallengeFactory",
     "TextChallengeFactory",
+    "WordChallengeFactory",
 ]

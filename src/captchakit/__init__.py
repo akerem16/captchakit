@@ -10,6 +10,7 @@ from captchakit.challenges import (
     EmojiGridChallengeFactory,
     MathChallengeFactory,
     TextChallengeFactory,
+    WordChallengeFactory,
 )
 from captchakit.errors import (
     CaptchaKitError,
@@ -23,7 +24,7 @@ from captchakit.manager import CaptchaManager
 from captchakit.renderers import ImageRenderer, Renderer
 from captchakit.storage import MemoryStorage, Storage
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 __all__ = [
     "CaptchaKitError",
@@ -45,5 +46,6 @@ __all__ = [
     "StorageError",
     "TextChallengeFactory",
     "TooManyAttempts",
+    "WordChallengeFactory",
     "__version__",
 ]
