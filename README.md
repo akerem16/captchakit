@@ -3,7 +3,7 @@
 > **Async-first, fully type-hinted captcha library for Python 3.10+.**
 > Zero runtime deps beyond Pillow. Drop-in adapters for FastAPI, aiogram and discord.py.
 
-[![PyPI](https://img.shields.io/badge/pypi-v0.1.0-blue.svg)](https://pypi.org/project/captchakit/)
+[![PyPI](https://img.shields.io/badge/pypi-v0.2.0-blue.svg)](https://pypi.org/project/captchakit/)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue.svg)](https://pypi.org/project/captchakit/)
 [![CI](https://github.com/akerem16/captchakit/actions/workflows/ci.yml/badge.svg)](https://github.com/akerem16/captchakit/actions/workflows/ci.yml)
 [![mypy: strict](https://img.shields.io/badge/mypy-strict-blue.svg)](http://mypy-lang.org/)
@@ -28,14 +28,13 @@
 ```bash
 pip install captchakit                  # core
 pip install "captchakit[fastapi]"       # + FastAPI adapter
-pip install "captchakit[aiogram]"       # + aiogram adapter (coming in 0.2)
+pip install "captchakit[aiogram]"       # + aiogram adapter
 pip install "captchakit[discord]"       # + discord.py adapter (coming in 0.3)
-pip install "captchakit[redis]"         # + Redis storage backend (coming in 0.2)
+pip install "captchakit[redis]"         # + Redis storage backend
 ```
 
-> Adapters other than FastAPI are declared in the roadmap but not shipped in
-> 0.1 yet. The extras install today but the adapter modules land in later
-> releases — see [ROADMAP.md](ROADMAP.md).
+> `discord.py` adapter lands in 0.3 — its extra installs today but the
+> adapter module itself is not yet shipped. See [ROADMAP.md](ROADMAP.md).
 
 ## 30-second example
 
@@ -122,8 +121,8 @@ See [ROADMAP.md](ROADMAP.md) for the full development plan.
 | Version | Highlights |
 |---|---|
 | 0.1 (MVP) | Core + Text/Math challenges + Image renderer + Memory storage + FastAPI |
-| 0.2 | aiogram + Redis storage + EmojiGridChallenge + docs site |
-| 0.3 | discord.py adapter + AudioChallenge (optional) + WordChallenge |
+| 0.2 ✅ | aiogram adapter + RedisStorage + EmojiGridChallenge |
+| 0.3 | discord.py adapter + AudioChallenge (optional) + WordChallenge + docs site |
 | 0.4 | i18n + theming + metrics hooks |
 | 1.0 | Stable API, semver commitment |
 

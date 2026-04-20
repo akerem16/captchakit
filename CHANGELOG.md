@@ -7,11 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Planned for 0.2
-- `aiogram` adapter (middleware + helper for chat-join verification).
-- `RedisStorage` backend (async, native TTL via `SETEX`).
-- `EmojiGridChallenge`.
+### Planned for 0.3
+- `discord.py` adapter (verification cog).
+- `AudioChallenge` (optional, requires extra).
+- `WordChallenge` (list-based accessibility challenge).
 - `mkdocs-material` site published to GitHub Pages.
+
+## [0.2.0] - 2026-04-20
+
+### Added
+- `RedisStorage`: async Redis-backed storage backend (`pip install "captchakit[redis]"`).
+  Uses native Redis TTL via `SETEX` for automatic cleanup; multi-process safe.
+- `EmojiGridChallengeFactory`: single-pick emoji-grid challenges. One target
+  emoji is placed in a random cell of a grid of distractors; the expected
+  answer is the 1-indexed cell number. Suitable for Telegram/Discord
+  inline-button flows.
+- `captchakit.adapters.aiogram.send_captcha`: helper that issues a challenge,
+  uploads the rendered image via `bot.send_photo`, and returns the challenge
+  id (`pip install "captchakit[aiogram]"`). Stays thin — user state is the
+  caller's responsibility (typically aiogram FSM).
+- Lazy `RedisStorage` re-export via `captchakit.storage.__getattr__`, so users
+  who haven't installed the `redis` extra don't hit ImportError at
+  `from captchakit.storage import ...`.
+
+### Internal
+- `fakeredis`, `aiogram`, `redis` added to `[dev]` extra to support CI tests.
 
 ## [0.1.0] - 2026-04-20
 

@@ -7,6 +7,7 @@ from captchakit.challenges import (
     Challenge,
     ChallengeFactory,
     ChallengeSpec,
+    EmojiGridChallengeFactory,
     MathChallengeFactory,
     TextChallengeFactory,
 )
@@ -22,7 +23,7 @@ from captchakit.manager import CaptchaManager
 from captchakit.renderers import ImageRenderer, Renderer
 from captchakit.storage import MemoryStorage, Storage
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     "CaptchaKitError",
@@ -34,6 +35,7 @@ __all__ = [
     "ChallengeNotFound",
     "ChallengeSpec",
     "Clock",
+    "EmojiGridChallengeFactory",
     "ImageRenderer",
     "MathChallengeFactory",
     "MemoryStorage",

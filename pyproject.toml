@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "captchakit"
-version = "0.1.0"
+version = "0.2.0"
 description = "Async-first, fully type-hinted, minimal captcha library with adapters for aiogram, FastAPI and Discord."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -48,6 +48,9 @@ dev = [
     "fastapi>=0.110",
     "python-multipart>=0.0.9",
     "uvicorn[standard]>=0.30",
+    "fakeredis>=2.23",
+    "aiogram>=3.4",
+    "redis>=5.0",
 ]
 docs = [
     "mkdocs-material>=9.5",
