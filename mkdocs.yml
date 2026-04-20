@@ -73,4 +73,5 @@ nav:
   - i18n: i18n.md
   - Rate limiting: ratelimit.md
   - Metrics: metrics.md
+  - Stability: stability.md
   - API Reference: api.md

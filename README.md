@@ -1,42 +1,51 @@
 # captchakit
 
-> **Async-first, fully type-hinted captcha library for Python 3.10+.**
-> Zero runtime deps beyond Pillow. Drop-in adapters for FastAPI, aiogram and discord.py.
+> **Production-ready, async-first captcha library for Python 3.10+.**
+> Zero runtime deps beyond Pillow. Drop-in adapters for FastAPI, aiogram, Discord and Django — plus Redis / Postgres storage, rate limiting and Prometheus metrics.
 
-[![PyPI](https://img.shields.io/badge/pypi-v0.5.0-blue.svg)](https://pypi.org/project/captchakit/)
+[![PyPI](https://img.shields.io/badge/pypi-v1.0.0-blue.svg)](https://pypi.org/project/captchakit/)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue.svg)](https://pypi.org/project/captchakit/)
 [![CI](https://github.com/akerem16/captchakit/actions/workflows/ci.yml/badge.svg)](https://github.com/akerem16/captchakit/actions/workflows/ci.yml)
 [![mypy: strict](https://img.shields.io/badge/mypy-strict-blue.svg)](http://mypy-lang.org/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Stable API](https://img.shields.io/badge/API-stable%201.x-green.svg)](https://akerem16.github.io/captchakit/stability/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 ---
 
-## Why another one?
+## Why captchakit
 
-| Feature                  | `lepture/captcha` | `claptcha` | `multicolorcaptcha` | **captchakit**                    |
-| ------------------------ | ----------------- | ---------- | ------------------- | --------------------------------- |
-| Async API                | ❌                 | ❌          | ❌                   | ✅                                 |
-| `py.typed` + mypy strict | ⚠️                | ❌          | ❌                   | ✅                                 |
-| TTL & attempt tracking   | ❌                 | ❌          | ❌                   | ✅ built-in                        |
-| Pluggable storage        | ❌                 | ❌          | ❌                   | ✅ `Protocol`                      |
-| Framework adapters       | ❌                 | ❌          | ❌                   | ✅ FastAPI · aiogram · discord.py |
-| Runtime deps (core)      | +Pillow           | +Pillow    | +Pillow             | +Pillow                           |
+| Feature                       | `lepture/captcha` | `claptcha` | `multicolorcaptcha` | **captchakit**                                 |
+| ----------------------------- | ----------------- | ---------- | ------------------- | ---------------------------------------------- |
+| Async API                     | ❌                 | ❌          | ❌                   | ✅                                              |
+| `py.typed` + mypy strict      | ⚠️                 | ❌          | ❌                   | ✅                                              |
+| TTL & attempt tracking        | ❌                 | ❌          | ❌                   | ✅ built-in                                     |
+| Pluggable storage             | ❌                 | ❌          | ❌                   | ✅ `Protocol` — Memory / Redis / Postgres       |
+| Pluggable rate limiter        | ❌                 | ❌          | ❌                   | ✅ `Protocol` — in-memory & Redis token-bucket  |
+| Prometheus metrics            | ❌                 | ❌          | ❌                   | ✅ opt-in                                       |
+| Framework adapters            | ❌                 | ❌          | ❌                   | ✅ FastAPI · aiogram · Discord · Django         |
+| Audio challenge (a11y)        | ❌                 | ❌          | ❌                   | ✅ `AudioRenderer`                              |
+| i18n prompt hooks             | ❌                 | ❌          | ❌                   | ✅ en / tr / de / es + custom catalog           |
+| Core runtime deps             | +Pillow           | +Pillow    | +Pillow             | +Pillow                                        |
 
 ## Install
 
 ```bash
 pip install captchakit                  # core
-pip install "captchakit[fastapi]"       # + FastAPI adapter
-pip install "captchakit[aiogram]"       # + aiogram adapter
-pip install "captchakit[discord]"       # + discord.py adapter
-pip install "captchakit[redis]"         # + Redis storage + rate limiter
-pip install "captchakit[postgres]"      # + Postgres storage backend
-pip install "captchakit[django]"        # + Django form field + view
-pip install "captchakit[metrics]"       # + Prometheus metrics adapter
-```
 
-See [ROADMAP.md](ROADMAP.md) for what's next.
+# adapters
+pip install "captchakit[fastapi]"
+pip install "captchakit[aiogram]"
+pip install "captchakit[discord]"
+pip install "captchakit[django]"
+
+# storage
+pip install "captchakit[redis]"         # + rate-limit token bucket
+pip install "captchakit[postgres]"
+
+# observability
+pip install "captchakit[metrics]"       # Prometheus adapter
+```
 
 ## 30-second example
 
@@ -85,49 +94,65 @@ uv run python -m uvicorn examples.fastapi_login:app --reload
 # open http://127.0.0.1:8000
 ```
 
-## Design
+## Architecture
 
 ```
-┌─────────────────────────────────────────────────┐
-│  Adapters (fastapi / aiogram / discord)         │
-├─────────────────────────────────────────────────┤
-│  CaptchaManager  (public facade)                │
-├──────────────┬──────────────┬───────────────────┤
-│  Challenge   │  Renderer    │  Storage          │
-│  Text / Math │  Image (PIL) │  Memory / Redis   │
-└──────────────┴──────────────┴───────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│  Adapters (FastAPI / aiogram / Discord / Django)             │
+├──────────────────────────────────────────────────────────────┤
+│  CaptchaManager  (issue → render → persist · verify · TTL)   │
+├──────────────┬──────────────┬───────────────┬────────────────┤
+│  Challenge   │  Renderer    │  Storage      │  Rate limiter  │
+│  Text · Math │  Image · SVG │  Memory       │  NoOp          │
+│  Grid · Word │  Audio       │  Redis · PG   │  Token bucket  │
+└──────────────┴──────────────┴───────────────┴────────────────┘
+             ↓ i18n translator · metrics sink · clock
 ```
 
-- **`Protocol`-based**, so you can drop in your own storage (Redis, Postgres,
-  Memcached), your own renderer (SVG, WebP, audio), or your own challenge
-  factory (wordlists, emoji grids, …).
+Everything coloured here is a `Protocol` — drop in your own implementation without subclassing.
+
 - **Constant-time comparison** via `hmac.compare_digest`.
 - **Crypto-safe randomness** via `secrets` for solution generation.
-- **CPU-bound Pillow drawing** offloaded to a worker thread via
-  `asyncio.to_thread`, so the event loop never blocks.
+- **CPU-bound Pillow drawing** offloaded to a worker thread with `asyncio.to_thread`.
+- **Multi-process safe** when paired with `RedisStorage` or `PostgresStorage`.
+
+## Performance
+
+| Operation                    | Mean (ms) | Median (ms) | p99 (ms) |
+|------------------------------|----------:|------------:|---------:|
+| `ImageRenderer.render` (PNG) |      3.64 |        3.54 |     4.84 |
+| `SVGRenderer.render` (SVG)   |      0.03 |        0.03 |     0.05 |
+| `AudioRenderer.render` (WAV) |      2.69 |        2.60 |     3.72 |
+| `issue + verify` round-trip  |      2.73 |        2.57 |     5.29 |
+
+Measured on a single CPython 3.13 thread, Windows 10, 500 iterations after 20 warmups. Reproduce with `uv run python benchmarks/bench.py`.
+
+## Production deployment
+
+- Run behind a proper reverse proxy with **TLS** and **WAF** rules.
+- Use `RedisStorage` or `PostgresStorage` if you scale beyond a single worker — `MemoryStorage` is per-process.
+- Wire `RateLimiter` to `RedisTokenBucket` (or your edge WAF) when exposing the issue endpoint publicly.
+- Expose `PrometheusMetrics` on `:9090/metrics` and alert on `captchakit_too_many_attempts_total` spikes.
+- Pair at least one visual renderer with `AudioRenderer` for accessibility.
+- Set `ttl` short (60–180 s) and `max_attempts` low (2–3) — captchakit is a raise-the-cost layer, not a fortress.
 
 ## Security scope
 
-**captchakit is a lightweight human-check**, not a bot-farm-grade security layer.
-It is aimed at Telegram/Discord verification, simple FastAPI registration flows
-and similar use cases where you just want to raise the cost for casual spam.
+captchakit is a **lightweight human-check** — it raises the cost for casual spam and scripted abuse. It is **not** a bot-farm-grade defence.
 
-For high-value forms (login, payment) use **hCaptcha**, **Cloudflare Turnstile**
-or **reCAPTCHA Enterprise** in addition. Combine captchakit with proper rate
-limiting at the edge of your application.
+For high-value forms (payment, password reset, account takeover) use **hCaptcha**, **Cloudflare Turnstile** or **reCAPTCHA Enterprise** *in addition* to captchakit, and enforce rate limiting at the edge of your application.
 
-## Roadmap
+Vulnerability reports: see [SECURITY.md](SECURITY.md).
 
-See [ROADMAP.md](ROADMAP.md) for the full development plan.
+## Stability & compatibility
 
-| Version | Highlights |
-|---|---|
-| 0.1 ✅ | Core + Text/Math challenges + Image renderer + Memory storage + FastAPI |
-| 0.2 ✅ | aiogram adapter + RedisStorage + EmojiGridChallenge |
-| 0.3 ✅ | discord.py adapter + WordChallenge + docs site |
-| 0.4 ✅ | AudioRenderer + Theme presets + i18n + Prometheus metrics |
-| 0.5 ✅ | PostgresStorage + SVGRenderer + RateLimiter + Django adapter |
-| 1.0 | Stable API, semver commitment |
+- **`1.x` is API-stable** — public symbols follow [semver](https://semver.org/). See [docs/stability.md](https://akerem16.github.io/captchakit/stability/) for the policy.
+- Supported Python versions: **3.10 → 3.13**. New 3.x is added within one MINOR of upstream release.
+- Every MINOR gets security patches throughout the life of the `1.x` line.
+
+## Documentation
+
+Full docs at **https://akerem16.github.io/captchakit/** — quickstart, adapter guides, storage & rate-limit recipes, i18n, metrics, accessibility, API reference.
 
 ## Contributing
 
@@ -140,7 +165,11 @@ uv sync --all-extras
 uv run ruff check .
 uv run mypy
 uv run pytest
+uv run bandit -c pyproject.toml -r src
+uv run pip-audit
 ```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 

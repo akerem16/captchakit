@@ -7,11 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Planned for 1.0
-- Public-API freeze + semver commitment.
-- Deprecation policy (2-minor warning window).
-- Security audit (`bandit`, `pip-audit` CI gate).
-- Performance benchmarks (README graphs).
+## [1.0.0] - 2026-04-20
+
+First production-ready release. **No breaking changes from 0.5.0** —
+all public imports keep working.
+
+### Stabilised
+- The full public surface listed in
+  [docs/stability.md](https://akerem16.github.io/captchakit/stability/)
+  is now covered by semver. Future `1.x` releases will only add or
+  deprecate — never remove — public names.
+- Classifier bumped to `Development Status :: 5 - Production/Stable`.
+
+### Added
+- `bandit` and `pip-audit` as CI gates; repo is clean against both
+  at release time.
+- `benchmarks/bench.py` — reproducible micro-benchmarks for every
+  renderer and the issue → verify round-trip.
+- `docs/stability.md` — formal versioning, deprecation window
+  (2 MINOR) and supported-Python policy.
+
+### Changed
+- `README.md` rewritten for production audiences: architecture
+  diagram, performance numbers, deployment checklist, security
+  scope.
+- `SECURITY.md` updated to reflect the `1.x` support matrix.
 
 ## [0.5.0] - 2026-04-20
 

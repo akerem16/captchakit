@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "captchakit"
-version = "0.5.0"
+version = "1.0.0"
 description = "Async-first, fully type-hinted, minimal captcha library with adapters for aiogram, FastAPI and Discord."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -12,7 +12,7 @@ license = { text = "MIT" }
 authors = [{ name = "akerem16", email = "pypi@kerempy.com.tr" }]
 keywords = ["captcha", "async", "asyncio", "aiogram", "fastapi", "discord", "bot", "verification"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 5 - Production/Stable",
     "Framework :: AsyncIO",
     "Framework :: FastAPI",
     "Intended Audience :: Developers",
@@ -58,6 +58,8 @@ dev = [
     "asyncpg>=0.29",
     "django>=4.2",
     "asgiref>=3.7",
+    "bandit>=1.7",
+    "pip-audit>=2.7",
 ]
 docs = [
     "mkdocs-material>=9.5",
@@ -107,6 +109,7 @@ ignore = [
 "tests/**" = ["S101", "ANN", "PLR2004", "ARG", "PT011", "PT018", "S106"]
 "examples/**" = ["ANN", "S", "T20"]
 "src/captchakit/storage/postgres.py" = ["S608"]  # table name is developer-controlled config, not user input
+"benchmarks/**" = ["S101", "ANN"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["captchakit"]
@@ -137,6 +140,16 @@ addopts = "-ra --strict-markers --strict-config"
 testpaths = ["tests"]
 asyncio_mode = "auto"
 filterwarnings = ["error"]
+
+[tool.bandit]
+exclude_dirs = ["tests", "examples", "site", "build", "dist"]
+# B101: asserts in non-test code are intentional (none exist currently).
+# B311: random is non-crypto decorative; secrets is used for solutions.
+# B608: PostgresStorage interpolates the `table` name (developer config,
+#       never user input) into SQL — all real parameters are bound.
+# B703/B308: mark_safe in Django adapter wraps a computed <img> tag where
+#            the only variable is a UUID challenge id — not user input.
+skips = ["B101", "B311", "B608", "B703", "B308"]
 
 [tool.coverage.run]
 branch = true

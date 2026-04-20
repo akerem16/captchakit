@@ -2,13 +2,14 @@
 
 ## Supported versions
 
-| Version | Supported |
-|---|---|
-| 0.1.x | ✅ |
-| < 0.1 | ❌ |
+| Version | Supported                          |
+|---------|------------------------------------|
+| 1.x     | ✅ security & bug fixes            |
+| 0.x     | ❌ end-of-life — upgrade to 1.x    |
 
-During 0.x the API is allowed to evolve; security fixes are backported to the
-most recent minor release only.
+Every MINOR line inside `1.x` receives security patches for the life of the
+`1.x` series. Non-security bug fixes land on the latest MINOR only; back-ports
+on request (open an issue).
 
 ## Reporting a vulnerability
 
@@ -56,7 +57,7 @@ or **reCAPTCHA Enterprise**, ideally in addition to captchakit.
 - **Replay of the image to a solver farm** — any third-party solver that can
   read the prompt can answer correctly. Combine with rate limiting.
 - **Shared state across processes** in `MemoryStorage` — use `RedisStorage`
-  (coming in 0.2) or another shared backend for multi-worker deployments.
+  or `PostgresStorage` for multi-worker deployments.
 - **Challenge-id enumeration** — ids are UUID4 (122 bits of randomness) so
   guessing is infeasible, but if your application leaks ids (e.g. in logs or
   URLs) an attacker can try to solve them directly.
