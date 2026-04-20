@@ -7,11 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Planned for 0.4
-- `AudioChallenge` (optional extra — accessibility alternative to images).
-- i18n hooks for challenge prompts.
-- Theming presets (color palettes, font bundles) for `ImageRenderer`.
-- Metrics callbacks (Prometheus-compatible counters for issue / verify).
+### Planned for 0.5
+- `PostgresStorage` (asyncpg, JSONB + TTL index).
+- `SVGRenderer` (vector output, smaller payloads).
+- Rate-limit protocol + Redis token-bucket reference impl.
+- Django adapter (form field + view mixin).
+
+## [0.4.0] - 2026-04-20
+
+### Added
+- `AudioRenderer`: accessibility-oriented audio renderer. Encodes the
+  challenge solution as a sequence of sine-wave tones (one per character)
+  and returns a WAV byte-stream. Zero runtime deps — stdlib `wave` only.
+- `Theme` with built-in presets: `Theme.CLASSIC`, `Theme.DARK`,
+  `Theme.PASTEL`, `Theme.HIGH_CONTRAST` (WCAG-friendly). `ImageRenderer`
+  now accepts a `theme=` keyword and exposes `bg_color`, `palette`,
+  `noise_lines` via the theme.
+- `PromptTranslator` protocol + `DefaultTranslator` with bundled
+  English, Turkish, German and Spanish strings. `EmojiGridChallengeFactory`
+  and `MathChallengeFactory` accept optional `translator=` and `locale=`.
+- `MetricsSink` protocol with default `NoOpMetrics`. `CaptchaManager`
+  emits one callback per lifecycle event (issue, verify success/fail,
+  expiration, too-many-attempts).
+- `PrometheusMetrics` adapter (`pip install "captchakit[metrics]"`).
+  Exports `captchakit_issued_total`, `captchakit_verified_total`,
+  `captchakit_expired_total`, `captchakit_too_many_attempts_total`.
+- Documentation: four new pages (Themes, Audio, i18n, Metrics).
 
 ## [0.3.0] - 2026-04-20
 

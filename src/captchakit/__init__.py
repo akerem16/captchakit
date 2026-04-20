@@ -20,13 +20,16 @@ from captchakit.errors import (
     StorageError,
     TooManyAttempts,
 )
+from captchakit.i18n import DefaultTranslator, PromptTranslator
 from captchakit.manager import CaptchaManager
-from captchakit.renderers import ImageRenderer, Renderer
+from captchakit.metrics import MetricsSink, NoOpMetrics
+from captchakit.renderers import AudioRenderer, ImageRenderer, Renderer, Theme
 from captchakit.storage import MemoryStorage, Storage
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 __all__ = [
+    "AudioRenderer",
     "CaptchaKitError",
     "CaptchaManager",
     "Challenge",
@@ -36,15 +39,20 @@ __all__ = [
     "ChallengeNotFound",
     "ChallengeSpec",
     "Clock",
+    "DefaultTranslator",
     "EmojiGridChallengeFactory",
     "ImageRenderer",
     "MathChallengeFactory",
     "MemoryStorage",
+    "MetricsSink",
     "MonotonicClock",
+    "NoOpMetrics",
+    "PromptTranslator",
     "Renderer",
     "Storage",
     "StorageError",
     "TextChallengeFactory",
+    "Theme",
     "TooManyAttempts",
     "WordChallengeFactory",
     "__version__",

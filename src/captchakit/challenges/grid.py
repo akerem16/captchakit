@@ -12,6 +12,7 @@ import secrets
 from dataclasses import dataclass, field
 
 from captchakit.challenges.base import ChallengeSpec
+from captchakit.i18n import PromptTranslator
 
 DEFAULT_EMOJI_POOL: tuple[str, ...] = (
     "🍎",
@@ -40,6 +41,8 @@ class EmojiGridChallengeFactory:
 
     size: int = 9
     emoji_pool: tuple[str, ...] = field(default_factory=lambda: DEFAULT_EMOJI_POOL)
+    translator: PromptTranslator | None = None
+    locale: str = "en"
 
     def __post_init__(self) -> None:
         min_count = 2
@@ -54,7 +57,11 @@ class EmojiGridChallengeFactory:
         distractors = tuple(e for e in self.emoji_pool if e != target)
         grid = [target if i == position else secrets.choice(distractors) for i in range(self.size)]
         numbered = " ".join(f"{i + 1}.{emoji}" for i, emoji in enumerate(grid))
-        prompt = f"Which cell contains {target}? Reply with the number. {numbered}"
+        if self.translator is not None:
+            head = self.translator.translate("grid.pick", self.locale, emoji=target)
+        else:
+            head = f"Which cell contains {target}? Reply with the number."
+        prompt = f"{head} {numbered}"
         return ChallengeSpec(
             prompt=prompt,
             solution=str(position + 1),

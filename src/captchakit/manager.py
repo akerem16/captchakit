@@ -8,6 +8,7 @@ from uuid import uuid4
 from captchakit._clock import Clock, MonotonicClock
 from captchakit.challenges.base import Challenge, ChallengeFactory
 from captchakit.errors import ChallengeExpired, ChallengeNotFound, TooManyAttempts
+from captchakit.metrics import MetricsSink, NoOpMetrics
 from captchakit.renderers.base import Renderer
 from captchakit.storage.base import Storage
 
@@ -35,6 +36,7 @@ class CaptchaManager:
     ttl: float = 120.0
     max_attempts: int = 3
     clock: Clock = field(default_factory=MonotonicClock)
+    metrics: MetricsSink = field(default_factory=NoOpMetrics)
 
     def __post_init__(self) -> None:
         if self.ttl <= 0:
@@ -56,6 +58,7 @@ class CaptchaManager:
         )
         image = await self.renderer.render(challenge)
         await self.storage.put(challenge)
+        self.metrics.on_issue()
         return challenge.id, image
 
     async def verify(self, challenge_id: str, user_input: str) -> bool:
@@ -76,13 +79,17 @@ class CaptchaManager:
             raise ChallengeNotFound(challenge_id)
         if challenge.is_expired(self.clock.now()):
             await self.storage.delete(challenge_id)
+            self.metrics.on_expired()
             raise ChallengeExpired(challenge_id)
         attempts = await self.storage.incr_attempts(challenge_id)
         if challenge.check(user_input):
             await self.storage.delete(challenge_id)
+            self.metrics.on_verify_success()
             return True
+        self.metrics.on_verify_fail()
         if attempts >= self.max_attempts:
             await self.storage.delete(challenge_id)
+            self.metrics.on_too_many_attempts()
             raise TooManyAttempts(challenge_id)
         return False
 

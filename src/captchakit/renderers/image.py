@@ -16,20 +16,12 @@ from typing import TYPE_CHECKING
 
 from PIL import Image, ImageDraw, ImageFont
 
+from captchakit.renderers.theme import Theme
+
 if TYPE_CHECKING:
     from captchakit.challenges.base import Challenge
 
 RGB = tuple[int, int, int]
-
-
-def _default_palette() -> tuple[RGB, ...]:
-    return (
-        (30, 30, 30),
-        (60, 20, 120),
-        (20, 80, 40),
-        (140, 30, 40),
-        (10, 60, 100),
-    )
 
 
 @dataclass(slots=True)
@@ -40,21 +32,36 @@ class ImageRenderer:
     with small random rotations / offsets and a few decorative lines. It is
     *not* meant to defeat OCR — it's a light human-check layer (see SECURITY
     notes in the README).
+
+    Pass a :class:`Theme` to switch visual style; built-in presets are
+    ``Theme.CLASSIC`` (default), ``Theme.DARK``, ``Theme.PASTEL`` and
+    ``Theme.HIGH_CONTRAST``.
     """
 
     width: int = 220
     height: int = 80
     padding: int = 10
     font_size: int = 40
+    theme: Theme = field(default_factory=lambda: Theme.CLASSIC)
     font_path: str | Path | None = None
-    bg_color: RGB = (245, 245, 245)
-    palette: tuple[RGB, ...] = field(default_factory=_default_palette)
-    noise_lines: int = 4
     content_type: str = "image/png"
 
+    @property
+    def bg_color(self) -> RGB:
+        return self.theme.bg_color
+
+    @property
+    def palette(self) -> tuple[RGB, ...]:
+        return self.theme.palette
+
+    @property
+    def noise_lines(self) -> int:
+        return self.theme.noise_lines
+
     def _load_font(self) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
-        if self.font_path is not None:
-            return ImageFont.truetype(str(self.font_path), self.font_size)
+        path = self.font_path if self.font_path is not None else self.theme.font_path
+        if path is not None:
+            return ImageFont.truetype(str(path), self.font_size)
         return ImageFont.load_default(size=self.font_size)
 
     def _render_sync(self, text: str) -> bytes:

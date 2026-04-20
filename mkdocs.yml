@@ -66,4 +66,8 @@ nav:
       - aiogram: adapters/aiogram.md
       - Discord: adapters/discord.md
   - Storage: storage.md
+  - Themes: themes.md
+  - Audio: audio.md
+  - i18n: i18n.md
+  - Metrics: metrics.md
   - API Reference: api.md

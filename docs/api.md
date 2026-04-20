@@ -19,12 +19,24 @@
 
 ::: captchakit.renderers.base.Renderer
 ::: captchakit.renderers.image.ImageRenderer
+::: captchakit.renderers.theme.Theme
+::: captchakit.renderers.audio.AudioRenderer
 
 ## Storage
 
 ::: captchakit.storage.base.Storage
 ::: captchakit.storage.memory.MemoryStorage
 ::: captchakit.storage.redis.RedisStorage
+
+## i18n
+
+::: captchakit.i18n.PromptTranslator
+::: captchakit.i18n.DefaultTranslator
+
+## Metrics
+
+::: captchakit.metrics.MetricsSink
+::: captchakit.metrics.NoOpMetrics
 
 ## Errors
 
