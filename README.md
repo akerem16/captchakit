@@ -3,8 +3,8 @@
 > **Async-first, fully type-hinted captcha library for Python 3.10+.**
 > Zero runtime deps beyond Pillow. Drop-in adapters for FastAPI, aiogram and discord.py.
 
-[![PyPI](https://img.shields.io/pypi/v/captchakit.svg)](https://pypi.org/project/captchakit/)
-[![Python](https://img.shields.io/pypi/pyversions/captchakit.svg)](https://pypi.org/project/captchakit/)
+[![PyPI](https://img.shields.io/badge/pypi-v0.1.0-blue.svg)](https://pypi.org/project/captchakit/)
+[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue.svg)](https://pypi.org/project/captchakit/)
 [![CI](https://github.com/akerem16/captchakit/actions/workflows/ci.yml/badge.svg)](https://github.com/akerem16/captchakit/actions/workflows/ci.yml)
 [![mypy: strict](https://img.shields.io/badge/mypy-strict-blue.svg)](http://mypy-lang.org/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)

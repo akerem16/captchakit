@@ -63,3 +63,8 @@ jobs:
 
       - name: Publish via trusted publishing
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          # Make the workflow idempotent — if a version already exists on
+          # PyPI (e.g. uploaded manually), the job finishes green instead of
+          # failing with "file already exists".
+          skip-existing: true
