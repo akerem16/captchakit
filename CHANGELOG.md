@@ -7,11 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Planned for 0.5
-- `PostgresStorage` (asyncpg, JSONB + TTL index).
-- `SVGRenderer` (vector output, smaller payloads).
-- Rate-limit protocol + Redis token-bucket reference impl.
-- Django adapter (form field + view mixin).
+### Planned for 1.0
+- Public-API freeze + semver commitment.
+- Deprecation policy (2-minor warning window).
+- Security audit (`bandit`, `pip-audit` CI gate).
+- Performance benchmarks (README graphs).
+
+## [0.5.0] - 2026-04-20
+
+### Added
+- `PostgresStorage` (`pip install "captchakit[postgres]"`): asyncpg-backed
+  storage with JSONB payload and `expires_at` index. Exposes
+  `create_schema()` for idempotent table bootstrap and
+  `cleanup_expired()` for periodic eviction. Lazy re-export via
+  `captchakit.storage.__getattr__`.
+- `SVGRenderer`: pure-Python vector renderer, no Pillow. Reuses
+  `Theme` for colours and noise density. Content type
+  `image/svg+xml`; ~10× smaller payload than the equivalent PNG.
+- `RateLimiter` protocol with `NoOpRateLimiter` default and in-memory
+  `TokenBucketRateLimiter`. Redis-backed `RedisTokenBucket` (atomic Lua
+  script) via the existing `[redis]` extra.
+  `CaptchaManager.issue(key=...)` optional parameter — passes the
+  caller identity to the limiter. New `RateLimited` exception.
+- Django adapter (`pip install "captchakit[django]"`): `CaptchaField`,
+  `CaptchaWidget` and `captcha_image_view`. Bridges the async
+  `CaptchaManager` via `asgiref.sync.async_to_sync`.
 
 ## [0.4.1] - 2026-04-20
 

@@ -54,3 +54,22 @@ pip install "captchakit[redis]"
 Until you install the extra, `from captchakit.storage import RedisStorage`
 defers the underlying `redis` import — so the absence of the package never
 breaks `from captchakit.storage import MemoryStorage`.
+
+## `PostgresStorage`
+
+```python
+import asyncpg
+from captchakit.storage import PostgresStorage
+
+pool = await asyncpg.create_pool(dsn="postgres://…")
+storage = PostgresStorage(pool=pool)
+await storage.create_schema()  # once at startup
+```
+
+- Single table (default name `captchakit_challenges`) with `challenge_id`
+  PK, `JSONB` payload, `attempts` counter and a `timestamptz`
+  `expires_at` column.
+- Multi-process and multi-host safe.
+- Postgres has no native per-row TTL; call `await storage.cleanup_expired()`
+  periodically (APScheduler / Celery beat / `asyncio.create_task`).
+- Install with `pip install "captchakit[postgres]"`.

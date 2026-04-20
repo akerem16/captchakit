@@ -9,6 +9,7 @@ from captchakit._clock import Clock, MonotonicClock
 from captchakit.challenges.base import Challenge, ChallengeFactory
 from captchakit.errors import ChallengeExpired, ChallengeNotFound, TooManyAttempts
 from captchakit.metrics import MetricsSink, NoOpMetrics
+from captchakit.ratelimit import NoOpRateLimiter, RateLimiter
 from captchakit.renderers.base import Renderer
 from captchakit.storage.base import Storage
 
@@ -37,6 +38,7 @@ class CaptchaManager:
     max_attempts: int = 3
     clock: Clock = field(default_factory=MonotonicClock)
     metrics: MetricsSink = field(default_factory=NoOpMetrics)
+    rate_limiter: RateLimiter = field(default_factory=NoOpRateLimiter)
 
     def __post_init__(self) -> None:
         if self.ttl <= 0:
@@ -44,8 +46,18 @@ class CaptchaManager:
         if self.max_attempts < 1:
             raise ValueError("max_attempts must be >= 1")
 
-    async def issue(self) -> tuple[str, bytes]:
-        """Create and persist a fresh challenge, return ``(id, image_bytes)``."""
+    async def issue(self, key: str = "global") -> tuple[str, bytes]:
+        """Create and persist a fresh challenge, return ``(id, image_bytes)``.
+
+        ``key`` identifies the caller for rate limiting — typically an IP
+        address, user id or session token. With the default
+        :class:`NoOpRateLimiter` the value is ignored.
+
+        Raises:
+            RateLimited: The configured :class:`RateLimiter` rejected
+                this ``key``.
+        """
+        await self.rate_limiter.acquire(key)
         spec = await self.factory.create()
         now = self.clock.now()
         challenge = Challenge(

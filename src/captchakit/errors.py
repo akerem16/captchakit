@@ -41,3 +41,17 @@ class TooManyAttempts(ChallengeError):
 
 class StorageError(CaptchaKitError):
     """Underlying storage backend failed."""
+
+
+class RateLimited(CaptchaKitError):
+    """The rate limiter rejected an ``issue`` call.
+
+    Thrown by :class:`~captchakit.CaptchaManager.issue` when the
+    configured :class:`~captchakit.ratelimit.RateLimiter` reports that
+    the caller (identified by ``key``) has exceeded its quota.
+    """
+
+    def __init__(self, key: str, retry_after: float | None = None) -> None:
+        super().__init__(f"rate limited: {key!r}")
+        self.key: str = key
+        self.retry_after: float | None = retry_after

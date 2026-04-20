@@ -17,16 +17,18 @@ from captchakit.errors import (
     ChallengeError,
     ChallengeExpired,
     ChallengeNotFound,
+    RateLimited,
     StorageError,
     TooManyAttempts,
 )
 from captchakit.i18n import DefaultTranslator, PromptTranslator
 from captchakit.manager import CaptchaManager
 from captchakit.metrics import MetricsSink, NoOpMetrics
-from captchakit.renderers import AudioRenderer, ImageRenderer, Renderer, Theme
+from captchakit.ratelimit import NoOpRateLimiter, RateLimiter, TokenBucketRateLimiter
+from captchakit.renderers import AudioRenderer, ImageRenderer, Renderer, SVGRenderer, Theme
 from captchakit.storage import MemoryStorage, Storage
 
-__version__ = "0.4.1"
+__version__ = "0.5.0"
 
 __all__ = [
     "AudioRenderer",
@@ -47,12 +49,17 @@ __all__ = [
     "MetricsSink",
     "MonotonicClock",
     "NoOpMetrics",
+    "NoOpRateLimiter",
     "PromptTranslator",
+    "RateLimited",
+    "RateLimiter",
     "Renderer",
+    "SVGRenderer",
     "Storage",
     "StorageError",
     "TextChallengeFactory",
     "Theme",
+    "TokenBucketRateLimiter",
     "TooManyAttempts",
     "WordChallengeFactory",
     "__version__",

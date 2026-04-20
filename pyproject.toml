@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "captchakit"
-version = "0.4.1"
+version = "0.5.0"
 description = "Async-first, fully type-hinted, minimal captcha library with adapters for aiogram, FastAPI and Discord."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -38,6 +38,8 @@ aiogram = ["aiogram>=3.4"]
 discord = ["discord.py>=2.3"]
 redis = ["redis>=5.0"]
 metrics = ["prometheus-client>=0.20"]
+postgres = ["asyncpg>=0.29"]
+django = ["django>=4.2", "asgiref>=3.7"]
 dev = [
     "ruff>=0.5",
     "mypy>=1.10",
@@ -53,6 +55,9 @@ dev = [
     "aiogram>=3.4",
     "redis>=5.0",
     "prometheus-client>=0.20",
+    "asyncpg>=0.29",
+    "django>=4.2",
+    "asgiref>=3.7",
 ]
 docs = [
     "mkdocs-material>=9.5",
@@ -99,8 +104,9 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S101", "ANN", "PLR2004", "ARG", "PT011", "PT018"]
+"tests/**" = ["S101", "ANN", "PLR2004", "ARG", "PT011", "PT018", "S106"]
 "examples/**" = ["ANN", "S", "T20"]
+"src/captchakit/storage/postgres.py" = ["S608"]  # table name is developer-controlled config, not user input
 
 [tool.ruff.lint.isort]
 known-first-party = ["captchakit"]
@@ -120,6 +126,10 @@ files = ["src", "tests"]
 module = ["tests.*"]
 disallow_untyped_decorators = false
 disable_error_code = ["no-untyped-def"]
+
+[[tool.mypy.overrides]]
+module = ["django.*", "asyncpg.*"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 minversion = "8.0"

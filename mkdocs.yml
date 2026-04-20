@@ -65,9 +65,12 @@ nav:
       - FastAPI: adapters/fastapi.md
       - aiogram: adapters/aiogram.md
       - Discord: adapters/discord.md
+      - Django: adapters/django.md
   - Storage: storage.md
+  - Renderers: renderers.md
   - Themes: themes.md
   - Audio: audio.md
   - i18n: i18n.md
+  - Rate limiting: ratelimit.md
   - Metrics: metrics.md
   - API Reference: api.md
