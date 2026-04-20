@@ -33,9 +33,7 @@ def test_theme_rejects_negative_noise() -> None:
 
 
 async def test_renderer_uses_theme_background() -> None:
-    renderer = ImageRenderer(
-        width=120, height=40, font_size=20, theme=Theme.HIGH_CONTRAST
-    )
+    renderer = ImageRenderer(width=120, height=40, font_size=20, theme=Theme.HIGH_CONTRAST)
     png = await renderer.render(_challenge())
     assert png.startswith(b"\x89PNG")
     assert renderer.bg_color == (255, 255, 255)
@@ -43,8 +41,6 @@ async def test_renderer_uses_theme_background() -> None:
 
 
 async def test_renderer_dark_theme_renders() -> None:
-    renderer = ImageRenderer(
-        width=120, height=40, font_size=20, theme=Theme.DARK
-    )
+    renderer = ImageRenderer(width=120, height=40, font_size=20, theme=Theme.DARK)
     png = await renderer.render(_challenge())
     assert png.startswith(b"\x89PNG")
