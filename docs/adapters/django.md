@@ -56,7 +56,9 @@ class RegisterForm(forms.Form):
     captcha = CaptchaField(manager=manager)
 ```
 
-- Issues a fresh challenge on unbound form construction.
+- Issues a fresh challenge for every form instance. A bound form that is
+  re-rendered after a validation error shows a new challenge, because the
+  submitted one may already be consumed.
 - `clean()` verifies the submitted answer; raises `ValidationError` on
   wrong / expired / exhausted attempts.
 - The widget produces `<img>` + hidden `captcha_id` + text input — render
@@ -70,8 +72,65 @@ If your URL pattern isn't `/captcha/<id>.png`, pass the template:
 CaptchaField(manager=manager, image_url_pattern="/auth/challenge/{id}.png")
 ```
 
+## Redis under WSGI
+
+Under WSGI (gunicorn sync workers, `runserver`) there is no long-lived
+event loop: every `async_to_sync` call creates a new loop and closes it
+afterwards. A `redis.asyncio` connection belongs to the loop that opened
+it, so a `RedisStorage` client shared by the module-level manager fails on
+the **second** call:
+
+```text
+RuntimeError: Event loop is closed
+```
+
+Run the storage on one long-lived loop instead, and hand every call to it:
+
+```python
+import asyncio
+import threading
+
+from captchakit import Challenge, Storage
+
+
+class LoopBridgedStorage:
+    def __init__(self, inner: Storage) -> None:
+        self.inner = inner
+        self.loop = asyncio.new_event_loop()
+        threading.Thread(target=self.loop.run_forever, daemon=True).start()
+
+    async def _run(self, coro):
+        future = asyncio.run_coroutine_threadsafe(coro, self.loop)
+        return await asyncio.wrap_future(future)
+
+    async def put(self, challenge: Challenge) -> None:
+        await self._run(self.inner.put(challenge))
+
+    async def get(self, challenge_id: str) -> Challenge | None:
+        return await self._run(self.inner.get(challenge_id))
+
+    async def delete(self, challenge_id: str) -> None:
+        await self._run(self.inner.delete(challenge_id))
+
+    async def incr_attempts(self, challenge_id: str) -> int:
+        return await self._run(self.inner.incr_attempts(challenge_id))
+
+
+storage = LoopBridgedStorage(RedisStorage(client=Redis.from_url(REDIS_URL)))
+```
+
+The same applies to `RedisTokenBucket`. With a forking server, create the
+loop lazily in each worker (after the fork). The
+[captchakit-django-demo](https://github.com/akerem16/captchakit-django-demo/blob/main/captcha_demo/loop_bridge.py)
+has a tested version that does this.
+
+`MemoryStorage` is not affected. Neither are sync views under ASGI: there
+`async_to_sync` hands the call to the server's single event loop.
+
 ## Async views
 
-If your project already runs on ASGI, you can skip the sync bridge and
-call the manager directly from async views. The form field still works —
-`async_to_sync` is safe inside an ASGI loop.
+If your project already runs on ASGI, call the manager directly from
+`async def` views (`await manager.verify(...)`). Do not call
+`form.is_valid()` on a form with a `CaptchaField` inside an `async def`
+view: `async_to_sync` raises `RuntimeError` in a thread that already runs
+an event loop. Wrap it with `sync_to_async` instead.
