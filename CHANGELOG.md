@@ -25,6 +25,13 @@ Bug-fix release for the Django adapter. No breaking changes.
   challenge id and answer. It now shows the instance's fresh challenge
   with an empty answer input.
 
+### Changed
+- Allow Pillow 13 (`Pillow>=10.0,<14`). Several Pillow CVEs are only
+  fixed in 13.0.0; the test suite passes unchanged on it.
+- Refreshed the locked versions of dependencies flagged by `pip-audit`
+  (aiohttp, Django, starlette, urllib3, sqlparse, …). Lockfile only;
+  runtime requirements other than Pillow are unchanged.
+
 ## [1.0.1] - 2026-04-20
 
 Docs-only patch release — no code changes, no breaking changes.

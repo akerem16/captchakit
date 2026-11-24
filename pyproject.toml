@@ -29,7 +29,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "Pillow>=10.0,<13",
+    "Pillow>=10.0,<14",
 ]
 
 [project.optional-dependencies]
