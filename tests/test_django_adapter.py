@@ -85,6 +85,33 @@ def test_captcha_field_rejects_wrong_answer(manager: CaptchaManager) -> None:
     assert not posted.is_valid()
 
 
+def test_form_instances_get_distinct_challenges(manager: CaptchaManager) -> None:
+    # Regression: Django deep-copies class-level fields into every form
+    # instance, so a challenge issued in CaptchaField.__init__ was shared by
+    # all instances of the same form class.
+    from asgiref.sync import async_to_sync  # noqa: PLC0415
+    from django import forms  # noqa: PLC0415
+
+    class MyForm(forms.Form):  # type: ignore[misc]
+        captcha = CaptchaField(manager=manager)
+
+    first = MyForm()
+    second = MyForm()
+    first_cid = first.fields["captcha"].initial[0]
+    second_cid = second.fields["captcha"].initial[0]
+    assert first_cid != second_cid
+
+    first_challenge = async_to_sync(manager.storage.get)(first_cid)
+    assert first_challenge is not None
+    first_posted = MyForm(data={"captcha_0": first_cid, "captcha_1": first_challenge.solution})
+    assert first_posted.is_valid(), first_posted.errors
+
+    second_challenge = async_to_sync(manager.storage.get)(second_cid)
+    assert second_challenge is not None
+    posted = MyForm(data={"captcha_0": second_cid, "captcha_1": second_challenge.solution})
+    assert posted.is_valid(), posted.errors
+
+
 def test_captcha_image_view_streams_bytes(manager: CaptchaManager) -> None:
     from asgiref.sync import async_to_sync  # noqa: PLC0415
     from django.http import Http404, HttpRequest  # noqa: PLC0415
