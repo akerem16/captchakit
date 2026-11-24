@@ -105,12 +105,13 @@ class CaptchaWidget(forms.MultiWidget):  # type: ignore[misc]
 class CaptchaField(forms.MultiValueField):  # type: ignore[misc]
     """Form field that owns a captcha challenge end-to-end.
 
-    Issues a fresh challenge when the form is built unbound, and
-    verifies the submitted answer in :meth:`clean`. Construct with the
+    Issues a fresh challenge for every form instance, and verifies the
+    submitted answer in :meth:`clean`. Construct with the
     :class:`CaptchaManager` to use.
     """
 
     widget = CaptchaWidget
+    initial: list[str] | None
 
     def __init__(
         self,
@@ -130,8 +131,25 @@ class CaptchaField(forms.MultiValueField):  # type: ignore[misc]
             widget=CaptchaWidget(image_url_pattern=image_url_pattern),
             **kwargs,
         )
-        # Pre-issue a challenge so the widget has an id to render.
-        self._refresh_challenge()
+        # No challenge is issued here: a field declared on a form class is
+        # built once per class, and Django deep-copies it into each form
+        # instance. Issuing in __deepcopy__ gives every instance its own id.
+
+    def __deepcopy__(self, memo: dict[int, Any]) -> CaptchaField:
+        result: CaptchaField = super().__deepcopy__(memo)
+        result._refresh_challenge()
+        return result
+
+    def get_bound_field(self, form: forms.BaseForm, field_name: str) -> forms.BoundField:
+        # Fields added to ``form.fields`` at runtime are not deep-copied.
+        if self.initial is None:
+            self._refresh_challenge()
+        return super().get_bound_field(form, field_name)
+
+    def bound_data(self, data: Any, initial: Any) -> Any:  # noqa: ARG002
+        # A re-rendered bound form shows this instance's fresh challenge: the
+        # submitted one may already be consumed, and the answer must be retyped.
+        return initial
 
     def _refresh_challenge(self) -> None:
         cid, _ = async_to_sync(self._manager.issue)()
