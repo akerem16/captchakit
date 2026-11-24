@@ -53,6 +53,20 @@ jobs:
         # cannot be audited against PyPI; we care about real deps.
         run: uv run pip-audit --skip-editable
 
+  docs:
+    # Same build as the "Deploy docs" workflow, so a broken build fails the PR
+    # instead of the deploy on main.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+      - run: uv python install 3.12
+      - run: uv sync --extra docs
+      - name: mkdocs build --strict
+        run: uv run mkdocs build --strict
+
   test:
     runs-on: ${{ matrix.os }}
     strategy:
