@@ -7,6 +7,9 @@ pip install "captchakit[django]"
 Django is sync-first, so the adapter bridges `CaptchaManager`'s async API
 through `asgiref.sync.async_to_sync`.
 
+A complete example (forms, a DRF API, Redis, Render deploy) lives in
+[captchakit-django-demo](https://github.com/akerem16/captchakit-django-demo).
+
 ## Setup
 
 Keep a single module-level manager — reuse it across views and forms:

@@ -158,6 +158,10 @@ Measured on a single CPython 3.13 thread, Windows 10, 500 iterations after 20 wa
 - Pair at least one visual renderer with `AudioRenderer` for accessibility.
 - Set `ttl` short (60–180 s) and `max_attempts` low (2–3) — captchakit is a raise-the-cost layer, not a fortress.
 
+**Example deployment:** [captchakit-django-demo](https://github.com/akerem16/captchakit-django-demo)
+is a Django + DRF app on Render with `RedisStorage`, a per-IP `RedisTokenBucket`, captcha-protected
+register / login / token API, OpenAPI docs and a `/healthz` check.
+
 ## Security scope
 
 captchakit is a **lightweight human-check** — it raises the cost for casual spam and scripted abuse. It is **not** a bot-farm-grade defence.
