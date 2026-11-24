@@ -112,6 +112,73 @@ def test_form_instances_get_distinct_challenges(manager: CaptchaManager) -> None
     assert posted.is_valid(), posted.errors
 
 
+def test_captcha_field_rejects_empty_answer(manager: CaptchaManager) -> None:
+    from django import forms  # noqa: PLC0415
+
+    class MyForm(forms.Form):  # type: ignore[misc]
+        captcha = CaptchaField(manager=manager)
+
+    cid = MyForm().fields["captcha"].initial[0]
+    posted = MyForm(data={"captcha_0": cid, "captcha_1": ""})
+    assert not posted.is_valid()
+    assert posted.errors["captcha"] == ["captcha is required"]
+    assert CaptchaField(manager=manager).compress([]) == ("", "")
+
+
+def test_captcha_field_rejects_consumed_challenge(manager: CaptchaManager) -> None:
+    from asgiref.sync import async_to_sync  # noqa: PLC0415
+    from django import forms  # noqa: PLC0415
+
+    class MyForm(forms.Form):  # type: ignore[misc]
+        captcha = CaptchaField(manager=manager)
+
+    cid = MyForm().fields["captcha"].initial[0]
+    challenge = async_to_sync(manager.storage.get)(cid)
+    assert challenge is not None
+    data = {"captcha_0": cid, "captcha_1": challenge.solution}
+
+    assert MyForm(data=data).is_valid()
+    replayed = MyForm(data=data)
+    assert not replayed.is_valid()
+    assert "captcha" in replayed.errors
+
+
+def test_rerendered_bound_form_shows_fresh_challenge(manager: CaptchaManager) -> None:
+    # A correct captcha is consumed even when another field fails, so the
+    # re-rendered form must not echo the submitted id or answer.
+    from asgiref.sync import async_to_sync  # noqa: PLC0415
+    from django import forms  # noqa: PLC0415
+
+    class MyForm(forms.Form):  # type: ignore[misc]
+        username = forms.CharField()
+        captcha = CaptchaField(manager=manager)
+
+    cid = MyForm().fields["captcha"].initial[0]
+    challenge = async_to_sync(manager.storage.get)(cid)
+    assert challenge is not None
+
+    posted = MyForm(data={"captcha_0": cid, "captcha_1": challenge.solution})
+    assert not posted.is_valid()
+    assert "username" in posted.errors
+    assert "captcha" not in posted.errors
+
+    new_cid, answer = posted["captcha"].value()
+    assert new_cid != cid
+    assert answer == ""
+    assert async_to_sync(manager.storage.get)(new_cid) is not None
+    assert f'value="{new_cid}"' in str(posted["captcha"])
+
+
+def test_dynamically_added_field_issues_challenge(manager: CaptchaManager) -> None:
+    from django import forms  # noqa: PLC0415
+
+    form = forms.Form()
+    form.fields["captcha"] = CaptchaField(manager=manager)
+    cid, answer = form["captcha"].value()
+    assert isinstance(cid, str) and len(cid) == 32
+    assert answer == ""
+
+
 def test_captcha_image_view_streams_bytes(manager: CaptchaManager) -> None:
     from asgiref.sync import async_to_sync  # noqa: PLC0415
     from django.http import Http404, HttpRequest  # noqa: PLC0415
