@@ -3,7 +3,7 @@
 > **Production-ready, async-first captcha library for Python 3.10+.**
 > Zero runtime deps beyond Pillow. Drop-in adapters for FastAPI, aiogram, Discord and Django — plus Redis / Postgres storage, rate limiting and Prometheus metrics.
 
-[![PyPI](https://img.shields.io/badge/pypi-v1.0.1-blue.svg)](https://pypi.org/project/captchakit/)
+[![PyPI](https://img.shields.io/badge/pypi-v1.0.2-blue.svg)](https://pypi.org/project/captchakit/)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue.svg)](https://pypi.org/project/captchakit/)
 [![CI](https://github.com/akerem16/captchakit/actions/workflows/ci.yml/badge.svg)](https://github.com/akerem16/captchakit/actions/workflows/ci.yml)
 [![mypy: strict](https://img.shields.io/badge/mypy-strict-blue.svg)](http://mypy-lang.org/)

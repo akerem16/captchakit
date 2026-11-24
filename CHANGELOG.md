@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-11-24
+
+Bug-fix release for the Django adapter. No breaking changes.
+
+### Fixed
+- `CaptchaField` issued its challenge once in `__init__`. Django builds
+  declared fields once per form *class* and deep-copies them into each
+  instance, so every instance of a form showed the same challenge id:
+  after the first successful verification (or once the TTL elapsed)
+  everyone else got a 404 image and a "not found" error. The challenge
+  is now issued per form instance (in `__deepcopy__`, or lazily in
+  `get_bound_field` for fields added at runtime), and no challenge is
+  issued at import time.
+- A bound form re-rendered after a validation error (e.g. a correct
+  captcha but a taken username) echoed the submitted, already consumed
+  challenge id and answer. It now shows the instance's fresh challenge
+  with an empty answer input.
+
 ## [1.0.1] - 2026-04-20
 
 Docs-only patch release — no code changes, no breaking changes.
