@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -31,10 +31,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -801,6 +801,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#redis-under-wsgi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Redis under WSGI
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#async-views" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1141,6 +1152,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#redis-under-wsgi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Redis under WSGI
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#async-views" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1176,6 +1198,8 @@
 </code></pre></div>
 <p>Django is sync-first, so the adapter bridges <code>CaptchaManager</code>'s async API
 through <code>asgiref.sync.async_to_sync</code>.</p>
+<p>A complete example (forms, a DRF API, Redis, Render deploy) lives in
+<a href="https://github.com/akerem16/captchakit-django-demo">captchakit-django-demo</a>.</p>
 <h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h2>
 <p>Keep a single module-level manager — reuse it across views and forms:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># app/captcha.py</span>
@@ -1217,7 +1241,9 @@ worker — <code>MemoryStorage</code> can't share challenges across processes.</
 <a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="n">captcha</span> <span class="o">=</span> <span class="n">CaptchaField</span><span class="p">(</span><span class="n">manager</span><span class="o">=</span><span class="n">manager</span><span class="p">)</span>
 </code></pre></div>
 <ul>
-<li>Issues a fresh challenge on unbound form construction.</li>
+<li>Issues a fresh challenge for every form instance. A bound form that is
+  re-rendered after a validation error shows a new challenge, because the
+  submitted one may already be consumed.</li>
 <li><code>clean()</code> verifies the submitted answer; raises <code>ValidationError</code> on
   wrong / expired / exhausted attempts.</li>
 <li>The widget produces <code>&lt;img&gt;</code> + hidden <code>captcha_id</code> + text input — render
@@ -1227,10 +1253,58 @@ worker — <code>MemoryStorage</code> can't share challenges across processes.</
 <p>If your URL pattern isn't <code>/captcha/&lt;id&gt;.png</code>, pass the template:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">CaptchaField</span><span class="p">(</span><span class="n">manager</span><span class="o">=</span><span class="n">manager</span><span class="p">,</span> <span class="n">image_url_pattern</span><span class="o">=</span><span class="s2">&quot;/auth/challenge/</span><span class="si">{id}</span><span class="s2">.png&quot;</span><span class="p">)</span>
 </code></pre></div>
+<h2 id="redis-under-wsgi">Redis under WSGI<a class="headerlink" href="#redis-under-wsgi" title="Permanent link">&para;</a></h2>
+<p>Under WSGI (gunicorn sync workers, <code>runserver</code>) there is no long-lived
+event loop: every <code>async_to_sync</code> call creates a new loop and closes it
+afterwards. A <code>redis.asyncio</code> connection belongs to the loop that opened
+it, so a <code>RedisStorage</code> client shared by the module-level manager fails on
+the <strong>second</strong> call:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>RuntimeError: Event loop is closed
+</code></pre></div>
+<p>Run the storage on one long-lived loop instead, and hand every call to it:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">captchakit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Challenge</span><span class="p">,</span> <span class="n">Storage</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="k">class</span><span class="w"> </span><span class="nc">LoopBridgedStorage</span><span class="p">:</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inner</span><span class="p">:</span> <span class="n">Storage</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">inner</span> <span class="o">=</span> <span class="n">inner</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">run_forever</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coro</span><span class="p">):</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>        <span class="n">future</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run_coroutine_threadsafe</span><span class="p">(</span><span class="n">coro</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="p">)</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>        <span class="k">return</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wrap_future</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">challenge</span><span class="p">:</span> <span class="n">Challenge</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a>        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inner</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">challenge</span><span class="p">))</span>
+<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a>
+<a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">challenge_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Challenge</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a>        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inner</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">challenge_id</span><span class="p">))</span>
+<a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a>
+<a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">challenge_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a>        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inner</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">challenge_id</span><span class="p">))</span>
+<a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a>
+<a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">incr_attempts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">challenge_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<a id="__codelineno-6-27" name="__codelineno-6-27" href="#__codelineno-6-27"></a>        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inner</span><span class="o">.</span><span class="n">incr_attempts</span><span class="p">(</span><span class="n">challenge_id</span><span class="p">))</span>
+<a id="__codelineno-6-28" name="__codelineno-6-28" href="#__codelineno-6-28"></a>
+<a id="__codelineno-6-29" name="__codelineno-6-29" href="#__codelineno-6-29"></a>
+<a id="__codelineno-6-30" name="__codelineno-6-30" href="#__codelineno-6-30"></a><span class="n">storage</span> <span class="o">=</span> <span class="n">LoopBridgedStorage</span><span class="p">(</span><span class="n">RedisStorage</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">Redis</span><span class="o">.</span><span class="n">from_url</span><span class="p">(</span><span class="n">REDIS_URL</span><span class="p">)))</span>
+</code></pre></div>
+<p>The same applies to <code>RedisTokenBucket</code>. With a forking server, create the
+loop lazily in each worker (after the fork). The
+<a href="https://github.com/akerem16/captchakit-django-demo/blob/main/captcha_demo/loop_bridge.py">captchakit-django-demo</a>
+has a tested version that does this.</p>
+<p><code>MemoryStorage</code> is not affected. Neither are sync views under ASGI: there
+<code>async_to_sync</code> hands the call to the server's single event loop.</p>
 <h2 id="async-views">Async views<a class="headerlink" href="#async-views" title="Permanent link">&para;</a></h2>
-<p>If your project already runs on ASGI, you can skip the sync bridge and
-call the manager directly from async views. The form field still works —
-<code>async_to_sync</code> is safe inside an ASGI loop.</p>
+<p>If your project already runs on ASGI, call the manager directly from
+<code>async def</code> views (<code>await manager.verify(...)</code>). Do not call
+<code>form.is_valid()</code> on a form with a <code>CaptchaField</code> inside an <code>async def</code>
+view: <code>async_to_sync</code> raises <code>RuntimeError</code> in a thread that already runs
+an event loop. Wrap it with <code>sync_to_async</code> instead.</p>
 
 
 
@@ -1286,10 +1360,10 @@ call the manager directly from async views. The form field still works —
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "content.code.copy", "content.code.annotate", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "content.code.copy", "content.code.annotate", "toc.follow"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
     
   </body>
